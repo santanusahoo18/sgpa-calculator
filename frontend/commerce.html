@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commerce SGPA Calculator - Fakir Mohan University</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        th, td {
+            text-align: center;
+            vertical-align: middle;
+        }
+        th:first-child, td:first-child {
+            text-align: left;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .header-card {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            color: #fff;
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+        }
+        .header-card h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        .header-card p {
+            opacity: 0.9;
+            font-size: 1.05rem;
+            max-width: 800px;
+        }
+        .theme-dark .header-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid var(--accent);
+        }
+        .theme-dark .header-card h2 {
+            color: var(--accent);
+        }
+        .practical-toggle-btn {
+            background-color: var(--bg-app);
+            border: 1px solid var(--border-color);
+            padding: 5px 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all var(--transition-fast);
+        }
+        .practical-toggle-btn.active {
+            background-color: #F59E0B;
+            color: #fff;
+            border-color: #D97706;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            transition: all var(--transition-fast);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .back-btn:hover {
+            background: #F59E0B;
+            color: #fff;
+            border-color: #F59E0B;
+        }
+    </style>
+
+</head>
+<body class="theme-light">
+    <!-- Theme & Session Resolution Script to prevent flash -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem("theme") || "theme-light";
+            document.body.className = savedTheme;
+
+            if (!localStorage.getItem("loggedInUser")) {
+                window.location.href = "login.html";
+            }
+        })();
+    </script>
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-logo">
+            <div class="logo-circle">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div class="logo-text">
+                <h1>BCom Honors Calculator</h1>
+                <p>Commerce Tabulation System</p>
+            </div>
+        </div>
+        <!-- Stream Menu Bar Switcher -->
+        <nav class="stream-menu-bar">
+            <a href="index.html" class="menu-item" id="menu-home"><i class="fa-solid fa-house"></i> <span>Home</span></a>
+            <a href="arts.html" class="menu-item" id="menu-arts"><i class="fa-solid fa-palette"></i> <span>Arts</span></a>
+            <a href="science.html" class="menu-item" id="menu-science"><i class="fa-solid fa-flask"></i> <span>Science</span></a>
+            <a href="commerce.html" class="menu-item active" id="menu-commerce"><i class="fa-solid fa-coins"></i> <span>Commerce</span></a>
+            <a href="developer.html" class="menu-item" id="menu-developer"><i class="fa-solid fa-laptop-code"></i> <span>Developer</span></a>
+        </nav>
+        <div class="header-actions">
+            <div id="user-profile-section" style="display: flex; align-items: center; gap: 12px; margin-right: 10px;">
+                <i class="fa-solid fa-circle-user" style="font-size: 1.3rem; color: var(--accent);"></i>
+                <span id="user-name-display" style="font-weight: 600; font-size: 0.9rem;">Student</span>
+                <button id="logout-btn" class="icon-btn" title="Logout" style="width: 32px; height: 32px; font-size: 0.95rem;">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+            <a id="header-login-btn" href="login.html" class="icon-btn" title="Login" style="display: none; width: 32px; height: 32px; font-size: 0.95rem; text-decoration: none;">
+                <i class="fa-solid fa-right-to-bracket"></i>
+            </a>
+            <button id="theme-toggle-btn" class="icon-btn" title="Toggle Theme">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="app-container">
+        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Streams</a>
+        
+        <main>
+            <section id="section-calc" class="calc-section active">
+                <div class="card header-card">
+                    <h2>Commerce Tabulation Calculator</h2>
+                    <p>Select your major department and semester below. The system automatically populates credit requirements and subject profiles according to FMU syllabus rules.</p>
+                    
+                    <div class="control-grid" style="margin-top: 25px;">
+                        <div class="input-group">
+                            <label for="dept-select" style="color: #fff;">Select Department / Major</label>
+                            <select id="dept-select" style="background: var(--bg-card); color: var(--text-main);">
+                                <option value="general">Commerce Honors / General</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="semester-select" style="color: #fff;">Select Semester</label>
+                            <select id="semester-select" style="background: var(--bg-card); color: var(--text-main);">
+                                <option value="1">1st Semester (NEP-2020)</option>
+                                <option value="2">2nd Semester (NEP-2020)</option>
+                                <option value="3">3rd Semester (NEP-2020)</option>
+                                <option value="4">4th Semester (CBCS)</option>
+                                <option value="5">5th Semester (CBCS)</option>
+                                <option value="6">6th Semester (CBCS)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Marks Entry Table Card -->
+                <div class="card table-card">
+                    <div class="table-header-row">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <h3>Tabulation Sheet</h3>
+                            <span id="syllabus-badge" class="badge warning-badge" style="width: auto; padding: 4px 10px; height: auto; border-radius: 20px; font-weight: 700; font-size: 0.75rem;">NEP-2020 Scheme</span>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table id="custom-marks-table">
+                            <thead>
+                                <tr id="table-headers-row">
+                                    <!-- Populated dynamically -->
+                                </tr>
+                            </thead>
+                            <tbody id="custom-table-body">
+                                <!-- Dynamic Tabulation Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Warnings/Fail Component Alerts -->
+                <div id="calculator-warnings-container" style="display: none; flex-direction: column; gap: 10px; margin-top: 20px;">
+                    <!-- Alerts dynamically loaded -->
+                </div>
+
+                <!-- Dashboard Summary -->
+                <div class="results-dashboard" style="margin-top: 30px;">
+                    <div class="card result-card">
+                        <h3>Calculated SGPA</h3>
+                        <div class="sgpa-display">
+                            <span id="sgpa-value">0.00</span>
+                        </div>
+                        <div style="width: 100%; border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 5px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="font-weight: 500; color: var(--text-muted);">Total Credits (CR):</span>
+                                <span id="summary-total-cr" style="font-weight: 700;">0</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="font-weight: 500; color: var(--text-muted);">Credit Points (CP):</span>
+                                <span id="summary-total-cp" style="font-weight: 700;">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card status-card">
+                        <h3>Result Status</h3>
+                        <div id="status-badge" class="status-indicator pass">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span id="status-text">PASS</span>
+                        </div>
+                        <div class="summary-metrics">
+                            <div class="metric">
+                                <span class="label">Total Marks Secured:</span>
+                                <span id="total-marks-secured" class="value">0 / 0</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Overall Percentage:</span>
+                                <span id="overall-percentage" class="value">0.0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reset Panel -->
+                <div class="card" style="padding: 16px; margin-top: 30px;">
+                    <div style="display: flex; justify-content: flex-end;">
+                        <button id="custom-reset-btn" class="btn btn-danger"><i class="fa-solid fa-rotate-right"></i> Reset Calculator</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Tabulation script -->
+    <script src="calculator.js"></script>
+</body>
+</html>

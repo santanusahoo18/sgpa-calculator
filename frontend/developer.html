@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Hub - SGPA Calculator</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .developer-page-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 8px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-fast);
+            margin-bottom: 20px;
+        }
+        .back-btn:hover {
+            color: var(--text-on-primary);
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateX(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        body.theme-dark .back-btn:hover {
+            color: var(--primary-dark);
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+    </style>
+</head>
+<body class="theme-light">
+    <!-- Theme & Session Resolution Script to prevent flash -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem("theme") || "theme-light";
+            document.body.className = savedTheme;
+
+            if (!localStorage.getItem("loggedInUser")) {
+                window.location.href = "login.html";
+            }
+        })();
+    </script>
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-logo">
+            <div class="logo-circle">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div class="logo-text">
+                <h1>SGPA Calculator</h1>
+                <p>Fakir Mohan University Tabulation System</p>
+            </div>
+        </div>
+        <!-- Stream Menu Bar Switcher -->
+        <nav class="stream-menu-bar">
+            <a href="index.html" class="menu-item" id="menu-home"><i class="fa-solid fa-house"></i> <span>Home</span></a>
+            <a href="arts.html" class="menu-item" id="menu-arts"><i class="fa-solid fa-palette"></i> <span>Arts</span></a>
+            <a href="science.html" class="menu-item" id="menu-science"><i class="fa-solid fa-flask"></i> <span>Science</span></a>
+            <a href="commerce.html" class="menu-item" id="menu-commerce"><i class="fa-solid fa-coins"></i> <span>Commerce</span></a>
+            <a href="developer.html" class="menu-item active" id="menu-developer"><i class="fa-solid fa-laptop-code"></i> <span>Developer</span></a>
+        </nav>
+        <div class="header-actions">
+            <div id="user-profile-section" style="display: flex; align-items: center; gap: 12px; margin-right: 10px;">
+                <i class="fa-solid fa-circle-user" style="font-size: 1.3rem; color: var(--accent);"></i>
+                <span id="user-name-display" style="font-weight: 600; font-size: 0.9rem;">Student</span>
+                <button id="logout-btn" class="icon-btn" title="Logout" style="width: 32px; height: 32px; font-size: 0.95rem;">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+            <a id="header-login-btn" href="login.html" class="icon-btn" title="Login" style="display: none; width: 32px; height: 32px; font-size: 0.95rem; text-decoration: none;">
+                <i class="fa-solid fa-right-to-bracket"></i>
+            </a>
+            <button id="theme-toggle-btn" class="icon-btn" title="Toggle Theme">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <div class="developer-page-container">
+        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Streams</a>
+
+        <!-- Developer Section -->
+        <section class="developer-section" id="developer-section" style="border-top: none; margin-top: 0; padding-top: 0;">
+            <h2 class="section-title">Developer Hub</h2>
+            <div class="developer-grid">
+                <!-- Developer Profile Card -->
+                <div class="dev-card main-dev-card">
+                    <div class="dev-avatar-wrapper">
+                        <div class="dev-avatar">
+                            <img src="santanu.jpg" alt="Santanu Sahoo" class="dev-photo" style="width: 100%; height: 100%; object-fit: cover; object-position: top center; border-radius: 50%;">
+                            <div class="avatar-glow"></div>
+                        </div>
+                    </div>
+                    <div class="dev-info">
+                        <span class="dev-label">Developed by</span>
+                        <h3 class="dev-name">Santanu Sahoo</h3>
+                        <p class="dev-subtext">17th CSE, IGIT Sarang ( 2024-28 )</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Load session info
+        const userStr = localStorage.getItem("loggedInUser");
+        const profileSection = document.getElementById("user-profile-section");
+        const loginBtn = document.getElementById("header-login-btn");
+
+        if (userStr) {
+            const user = JSON.parse(userStr);
+            if (profileSection) profileSection.style.display = "flex";
+            if (loginBtn) loginBtn.style.display = "none";
+            document.getElementById("user-name-display").textContent = user.name;
+        } else {
+            if (profileSection) profileSection.style.display = "none";
+            if (loginBtn) loginBtn.style.display = "flex";
+        }
+
+        // Initialize Theme Toggle State on page load
+        const initTheme = () => {
+            const savedTheme = localStorage.getItem("theme") || "theme-light";
+            document.body.className = savedTheme;
+            const icon = document.querySelector('#theme-toggle-btn i');
+            if (icon) {
+                if (savedTheme === 'theme-dark') {
+                    icon.className = 'fa-solid fa-sun';
+                } else {
+                    icon.className = 'fa-solid fa-moon';
+                }
+            }
+        };
+        initTheme();
+
+        // Theme toggler
+        document.getElementById('theme-toggle-btn').addEventListener('click', () => {
+            const body = document.body;
+            const icon = document.querySelector('#theme-toggle-btn i');
+            if (body.classList.contains('theme-light')) {
+                body.classList.replace('theme-light', 'theme-dark');
+                icon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem("theme", "theme-dark");
+            } else {
+                body.classList.replace('theme-dark', 'theme-light');
+                icon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem("theme", "theme-light");
+            }
+        });
+
+        // Logout
+        document.getElementById("logout-btn").addEventListener("click", () => {
+            localStorage.removeItem("loggedInUser");
+            localStorage.removeItem("token");
+            localStorage.removeItem("userName");
+            window.location.href = "index.html";
+        });
+    </script>
+</body>
+</html>

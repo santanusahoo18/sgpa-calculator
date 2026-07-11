@@ -1,0 +1,38 @@
+[
+  {
+    "id": "1783763380352",
+    "name": "Santanu Sahoo",
+    "email": "santanu.sahoo14112006@gmail.com",
+    "password": "$2a$10$6MJuoTDQ2FFhtfVEiLhgMOVhaBSlW6/bNhrLafRd5t5UNGFdjk6sO",
+    "registeredAt": "2026-07-11T09:49:40.352Z",
+    "lastLogin": "2026-07-11T13:10:41.704Z",
+    "loginCount": 6
+  },
+  {
+    "id": "1783763436932",
+    "name": "Santanu Sahoo",
+    "email": "santanu.gpt@gmail.com",
+    "password": "$2a$10$X8L/sb0xgQ832R1pBIK4a.u8/n2Ds8fDreWH7Y4/0Ve705tnRVc4O",
+    "registeredAt": "2026-07-11T09:50:36.932Z",
+    "lastLogin": null,
+    "loginCount": 0
+  },
+  {
+    "id": "1783764294720",
+    "name": "Santanu Test",
+    "email": "santanutest@gmail.com",
+    "password": "$2a$10$Q3W6MbfEO6RGy.YlM33Ty.PnFLCKD4uO71GOudQ1MAM8pcu9Wv7OC",
+    "registeredAt": "2026-07-11T10:04:54.720Z",
+    "lastLogin": "2026-07-11T10:22:18.234Z",
+    "loginCount": 3
+  },
+  {
+    "id": "1783767522464",
+    "name": "Santanu Sahoo",
+    "email": "santanu.rdx45@gmail.com",
+    "password": "$2a$10$Ld3wKmMBrT9W/SCPeDnBhOsNl2T1jHhPBDNW0qTGaTBzT9PLoK9mu",
+    "registeredAt": "2026-07-11T10:58:42.464Z",
+    "lastLogin": "2026-07-11T11:00:26.513Z",
+    "loginCount": 1
+  }
+]

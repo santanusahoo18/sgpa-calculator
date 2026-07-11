@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stream Selection Portal - FMU SGPA Calculator</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .portal-container {
+            max-width: 1000px;
+            margin: 60px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .portal-header {
+            margin-bottom: 50px;
+        }
+        .portal-header h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+        body.theme-dark .portal-header h2 {
+            color: var(--accent);
+        }
+        .portal-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+        .stream-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .stream-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 40px 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-normal);
+            text-decoration: none;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .stream-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--primary);
+            transition: all var(--transition-fast);
+        }
+        .stream-card.arts-card::before { background: #3B82F6; }
+        .stream-card.science-card::before { background: #10B981; }
+        .stream-card.commerce-card::before { background: #F59E0B; }
+
+        .stream-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent);
+        }
+        .stream-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            margin-bottom: 25px;
+            background-color: var(--bg-app);
+            transition: all var(--transition-fast);
+        }
+        .arts-card .stream-icon { color: #3B82F6; }
+        .science-card .stream-icon { color: #10B981; }
+        .commerce-card .stream-icon { color: #F59E0B; }
+
+        .stream-card:hover .stream-icon {
+            transform: scale(1.1);
+        }
+        .stream-card h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        .stream-card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+    </style>
+
+</head>
+<body class="theme-light">
+    <!-- Theme & Session Resolution Script to prevent flash -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem("theme") || "theme-light";
+            document.body.className = savedTheme;
+
+            if (!localStorage.getItem("loggedInUser")) {
+                window.location.href = "login.html";
+            }
+        })();
+    </script>
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-logo">
+            <div class="logo-circle">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div class="logo-text">
+                <h1>SGPA Calculator</h1>
+                <p>Fakir Mohan University Tabulation System</p>
+            </div>
+        </div>
+        <!-- Stream Menu Bar Switcher -->
+        <nav class="stream-menu-bar">
+            <a href="index.html" class="menu-item active" id="menu-home"><i class="fa-solid fa-house"></i> <span>Home</span></a>
+            <a href="developer.html" class="menu-item" id="menu-developer"><i class="fa-solid fa-laptop-code"></i> <span>Developer</span></a>
+        </nav>
+        <div class="header-actions">
+            <div id="user-profile-section" style="display: flex; align-items: center; gap: 12px; margin-right: 10px;">
+                <i class="fa-solid fa-circle-user" style="font-size: 1.3rem; color: var(--accent);"></i>
+                <span id="user-name-display" style="font-weight: 600; font-size: 0.9rem;">Student</span>
+                <button id="logout-btn" class="icon-btn" title="Logout" style="width: 32px; height: 32px; font-size: 0.95rem;">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+            <a id="header-login-btn" href="login.html" class="icon-btn" title="Login" style="display: none; width: 32px; height: 32px; font-size: 0.95rem; text-decoration: none;">
+                <i class="fa-solid fa-right-to-bracket"></i>
+            </a>
+            <button id="theme-toggle-btn" class="icon-btn" title="Toggle Theme">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <div class="portal-container">
+        <div class="portal-header">
+            <h2 id="welcome-msg">Select Academic Stream</h2>
+            <p>Choose your academic stream to proceed with subject-specific SGPA calculation</p>
+        </div>
+
+        <div class="stream-grid">
+            <a href="arts.html" class="stream-card arts-card">
+                <div class="stream-icon">
+                    <i class="fa-solid fa-palette"></i>
+                </div>
+                <h3>Arts</h3>
+                <p>BA Honors calculators with custom department profiles &amp; Education practical configurations.</p>
+            </a>
+
+            <a href="science.html" class="stream-card science-card">
+                <div class="stream-icon">
+                    <i class="fa-solid fa-flask"></i>
+                </div>
+                <h3>Science</h3>
+                <p>BSc Honors calculators for Botany, Physics, Chemistry, Zoology, Computer Science, and Mathematics.</p>
+            </a>
+
+            <a href="commerce.html" class="stream-card commerce-card">
+                <div class="stream-icon">
+                    <i class="fa-solid fa-coins"></i>
+                </div>
+                <h3>Commerce</h3>
+                <p>BCom Honors calculators with business, marketing, accounting, and CAETR practical components.</p>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Load session info
+        const userStr = localStorage.getItem("loggedInUser");
+        const profileSection = document.getElementById("user-profile-section");
+        const loginBtn = document.getElementById("header-login-btn");
+
+        if (userStr) {
+            const user = JSON.parse(userStr);
+            if (profileSection) profileSection.style.display = "flex";
+            if (loginBtn) loginBtn.style.display = "none";
+            document.getElementById("user-name-display").textContent = user.name;
+            document.getElementById("welcome-msg").textContent = `Welcome, ${user.name}!`;
+        } else {
+            if (profileSection) profileSection.style.display = "none";
+            if (loginBtn) loginBtn.style.display = "flex";
+            document.getElementById("welcome-msg").textContent = `Select Academic Stream`;
+        }
+
+        // Initialize Theme Toggle State on page load
+        const initTheme = () => {
+            const savedTheme = localStorage.getItem("theme") || "theme-light";
+            document.body.className = savedTheme;
+            const icon = document.querySelector('#theme-toggle-btn i');
+            if (icon) {
+                if (savedTheme === 'theme-dark') {
+                    icon.className = 'fa-solid fa-sun';
+                } else {
+                    icon.className = 'fa-solid fa-moon';
+                }
+            }
+        };
+        initTheme();
+
+        // Theme toggler
+        document.getElementById('theme-toggle-btn').addEventListener('click', () => {
+            const body = document.body;
+            const icon = document.querySelector('#theme-toggle-btn i');
+            if (body.classList.contains('theme-light')) {
+                body.classList.replace('theme-light', 'theme-dark');
+                icon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem("theme", "theme-dark");
+            } else {
+                body.classList.replace('theme-dark', 'theme-light');
+                icon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem("theme", "theme-light");
+            }
+        });
+
+        // Logout
+        document.getElementById("logout-btn").addEventListener("click", () => {
+            localStorage.removeItem("loggedInUser");
+            localStorage.removeItem("token");
+            localStorage.removeItem("userName");
+            window.location.href = "index.html";
+        });
+
+    </script>
+</body>
+</html>

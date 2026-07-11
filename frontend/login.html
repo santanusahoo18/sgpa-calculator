@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - SGPA CALC</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body {
+      background: var(--bg-app);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      transition: background-color var(--transition-normal), color var(--transition-normal);
+    }
+    .auth-container { width: 100%; max-width: 420px; position: relative; }
+    .auth-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 40px 32px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-color);
+      transition: all var(--transition-normal);
+    }
+    .back-home-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      transition: color var(--transition-fast);
+    }
+    .back-home-link:hover {
+      color: var(--primary-light);
+    }
+    body.theme-dark .back-home-link:hover {
+      color: var(--accent);
+    }
+    .auth-header { text-align: center; margin-bottom: 28px; }
+    .auth-logo {
+      width: 60px; height: 60px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: var(--text-on-primary);
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      margin: 0 auto 16px;
+      box-shadow: 0 4px 10px rgba(15, 44, 89, 0.2);
+    }
+    body.theme-dark .auth-logo {
+      background: linear-gradient(135deg, var(--accent-dark) 0%, var(--accent) 100%);
+      color: var(--primary-dark);
+      box-shadow: 0 4px 10px rgba(197, 160, 89, 0.2);
+    }
+    .auth-header h2 { 
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.6rem; 
+      margin-bottom: 8px; 
+      color: var(--text-main); 
+      font-weight: 800;
+    }
+    .auth-header p { color: var(--text-muted); font-size: 0.9rem; }
+    .auth-error {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: rgba(239, 68, 68, 0.08);
+      color: var(--color-fail);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+    }
+    .form-group { position: relative; margin-bottom: 20px; }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 36px;
+      color: var(--text-muted);
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px 14px 12px 40px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-input);
+      color: var(--text-main);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all var(--transition-fast);
+    }
+    .form-group input:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px rgba(15, 44, 89, 0.1); }
+    body.theme-dark .form-group input:focus { box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.15); }
+    .submit-btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--primary);
+      color: var(--text-on-primary);
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all var(--transition-fast);
+    }
+    .submit-btn:hover { background: var(--primary-light); }
+    body.theme-dark .submit-btn {
+      background: var(--accent);
+      color: var(--primary-dark);
+    }
+    body.theme-dark .submit-btn:hover {
+      background: var(--accent-light);
+    }
+    .submit-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+    .switch-link { text-align: center; margin-top: 20px; font-size: 0.88rem; color: var(--text-muted); }
+    .switch-link a { color: var(--primary-light); text-decoration: none; font-weight: 600; }
+    body.theme-dark .switch-link a { color: var(--accent); }
+    .switch-link a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body class="theme-light">
+  <!-- Theme Resolution Script to prevent flash -->
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem("theme") || "theme-light";
+      document.body.className = savedTheme;
+    })();
+  </script>
+
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-logo"><i class="fa-solid fa-graduation-cap"></i></div>
+        <h2>Welcome Back</h2>
+        <p>Log in to continue tracking your academic progress</p>
+      </div>
+
+      <div id="login-error" class="auth-error">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span id="error-message">Login failed.</span>
+      </div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <i class="fa-solid fa-envelope input-icon"></i>
+          <input type="email" id="email" required placeholder="john@example.com">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <i class="fa-solid fa-lock input-icon"></i>
+          <input type="password" id="password" required placeholder="Your password">
+        </div>
+        <button type="submit" class="submit-btn" id="submit-btn">Log In</button>
+      </form>
+
+      <div class="switch-link">
+        Don't have an account? <a href="register.html">Create one</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ⚠️ This must point at your BACKEND server, not the page you're viewing.
+    // Local testing: keep this as http://localhost:3000
+    // After deploying online: change this to your live Render address, e.g. "https://sgpa-backend-xxxx.onrender.com"
+    const API_URL = "http://localhost:3000";
+
+    const form = document.getElementById("login-form");
+    const errorBox = document.getElementById("login-error");
+    const errorMsg = document.getElementById("error-message");
+    const submitBtn = document.getElementById("submit-btn");
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      errorBox.style.display = "none";
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Logging in...";
+
+      try {
+        const res = await fetch(API_URL + "/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email, password: password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          errorMsg.textContent = data.error || "Login failed.";
+          errorBox.style.display = "flex";
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Log In";
+          return;
+        }
+
+        // Save login info so the app remembers who's logged in
+        const userObj = {
+          name: data.user.name,
+          email: data.user.email,
+          token: data.token
+        };
+        localStorage.setItem("loggedInUser", JSON.stringify(userObj));
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userName", data.user.name);
+
+        window.location.href = "index.html";
+
+      } catch (err) {
+        errorMsg.textContent = "Could not reach the server. Make sure it's running (node server.js).";
+        errorBox.style.display = "flex";
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Log In";
+      }
+    });
+  </script>
+</body>
+</html>
