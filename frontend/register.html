@@ -202,8 +202,8 @@
   </div>
 
   <script>
-    // ⚠️ If you deploy this online later, change this to your live server address
-    const API_URL = window.location.origin && window.location.origin.startsWith('http') ? window.location.origin : "http://localhost:3000";
+    // This points to your live backend on Render
+    const API_URL = "https://sgpa-calculator-g0c8.onrender.com";
 
     const form = document.getElementById("register-form");
     const errorBox = document.getElementById("register-error");
@@ -251,7 +251,7 @@
         }, 1500);
 
       } catch (err) {
-        errorMsg.textContent = "Could not reach the server. Make sure it's running (node server.js).";
+        errorMsg.textContent = "Could not reach the server. Please try again in a moment.";
         errorBox.style.display = "flex";
         submitBtn.disabled = false;
         submitBtn.textContent = "Create Account";
@@ -259,4 +259,4 @@
     });
   </script>
 </body>
-</html>cd
+</html>
