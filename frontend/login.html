@@ -180,10 +180,8 @@
   </div>
 
   <script>
-    // ⚠️ This must point at your BACKEND server, not the page you're viewing.
-    // Local testing: keep this as http://localhost:3000
-    // After deploying online: change this to your live Render address, e.g. "https://sgpa-backend-xxxx.onrender.com"
-    const API_URL = "http://localhost:3000";
+    // This points to your live backend on Render
+    const API_URL = "https://sgpa-calculator-g0c8.onrender.com";
 
     const form = document.getElementById("login-form");
     const errorBox = document.getElementById("login-error");
@@ -231,7 +229,7 @@
         window.location.href = "index.html";
 
       } catch (err) {
-        errorMsg.textContent = "Could not reach the server. Make sure it's running (node server.js).";
+        errorMsg.textContent = "Could not reach the server. Please try again in a moment.";
         errorBox.style.display = "flex";
         submitBtn.disabled = false;
         submitBtn.textContent = "Log In";
