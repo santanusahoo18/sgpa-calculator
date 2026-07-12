@@ -203,6 +203,17 @@ const CalculatorController = {
         this.detectStream();
         this.loadUserSession();
         this.bindEvents();
+        
+        // Parse semester query parameter if present
+        const urlParams = new URLSearchParams(window.location.search);
+        const semParam = urlParams.get('semester');
+        const semSelect = document.getElementById("semester-select");
+        if (semParam && semSelect) {
+            if (['1', '2', '3', '4', '5', '6'].includes(semParam)) {
+                semSelect.value = semParam;
+            }
+        }
+        
         this.detectSyllabusAndLoad();
         this.loadSavedHistory();
     },
@@ -302,6 +313,17 @@ const CalculatorController = {
         const badge = document.getElementById("syllabus-badge");
         if (badge) {
             badge.textContent = mode === 'nep' ? 'NEP-2020 Scheme' : 'CBCS Scheme';
+        }
+
+        const semDisplay = document.getElementById("semester-display");
+        if (semDisplay) {
+            let semText = "1st Semester";
+            if (semester === 2) semText = "2nd Semester";
+            else if (semester === 3) semText = "3rd Semester";
+            else if (semester === 4) semText = "4th Semester";
+            else if (semester === 5) semText = "5th Semester";
+            else if (semester === 6) semText = "6th Semester";
+            semDisplay.textContent = semText;
         }
 
         this.renderHeaders();

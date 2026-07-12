@@ -145,12 +145,12 @@
 
     <!-- Main Content -->
     <div class="app-container">
-        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Streams</a>
+        <a href="index.html?flow=calculator" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Streams</a>
         
         <main>
             <section id="section-calc" class="calc-section active">
                 <div class="card header-card">
-                    <h2>Commerce Tabulation Calculator</h2>
+                    <h2>Commerce Tabulation Calculator - <span id="semester-display">1st Semester</span></h2>
                     <p>Select your major department and semester below. The system automatically populates credit requirements and subject profiles according to FMU syllabus rules.</p>
                     
                     <div class="control-grid" style="margin-top: 25px;">
@@ -160,7 +160,7 @@
                                 <option value="general">Commerce Honors / General</option>
                             </select>
                         </div>
-                        <div class="input-group">
+                        <div class="input-group" style="display: none;">
                             <label for="semester-select" style="color: #fff;">Select Semester</label>
                             <select id="semester-select" style="background: var(--bg-card); color: var(--text-main);">
                                 <option value="1">1st Semester (NEP-2020)</option>

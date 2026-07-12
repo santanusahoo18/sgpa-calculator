@@ -1,6 +1,6 @@
 // ============================================================
 // SGPA CALC — Backend Server (MongoDB Atlas version)
-// Handles: Register, Login, User Count, Reset Password, Admin User List
+// Handles: Register, Login, User Count, Reset Password, Admin User List, Notes
 // Storage: MongoDB (via Mongoose)
 // ============================================================
 
@@ -57,6 +57,18 @@ const userSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model("User", userSchema);
+
+// ---------- NOTE SCHEMA ----------
+const noteSchema = new mongoose.Schema({
+  stream: { type: String, required: true }, // science / arts / commerce
+  dept: { type: String, required: true }, // e.g. computer_science
+  semester: { type: String, required: true }, // e.g. "1"
+  title: { type: String, required: true },
+  link: { type: String, required: true }, // Google Drive link
+  uploadedAt: { type: Date, default: Date.now },
+});
+
+const Note = mongoose.model("Note", noteSchema);
 
 // ============================================================
 // POST /api/register
@@ -165,11 +177,9 @@ app.post("/api/reset-password", async (req, res) => {
     const { email, name, newPassword } = req.body;
 
     if (!email || !name || !newPassword) {
-      return res
-        .status(400)
-        .json({
-          error: "Email, registered name and new password are required.",
-        });
+      return res.status(400).json({
+        error: "Email, registered name and new password are required.",
+      });
     }
 
     const user = await User.findOne({ email: email.toLowerCase() });
@@ -214,6 +224,61 @@ app.get("/api/admin/users", async (req, res) => {
     res.json(users);
   } catch (err) {
     console.error("Admin users error:", err);
+    res.status(500).json({ error: "Server error. Please try again." });
+  }
+});
+
+// ============================================================
+// GET /api/notes
+// Public — returns all notes so any user's browser/device can see them.
+// ============================================================
+app.get("/api/notes", async (req, res) => {
+  try {
+    const notes = await Note.find({}).sort({ uploadedAt: -1 });
+    res.json(notes);
+  } catch (err) {
+    console.error("Get notes error:", err);
+    res.status(500).json({ error: "Server error. Please try again." });
+  }
+});
+
+// ============================================================
+// POST /api/notes
+// Header: x-admin-key: ADMIN_KEY
+// body: { stream, dept, semester, title, link }
+// ============================================================
+app.post("/api/notes", async (req, res) => {
+  try {
+    if (req.header("x-admin-key") !== ADMIN_KEY) {
+      return res.status(403).json({ error: "Invalid admin key." });
+    }
+
+    const { stream, dept, semester, title, link } = req.body;
+    if (!stream || !dept || !semester || !title || !link) {
+      return res.status(400).json({ error: "All fields are required." });
+    }
+
+    const note = await Note.create({ stream, dept, semester, title, link });
+    return res.status(201).json(note);
+  } catch (err) {
+    console.error("Create note error:", err);
+    res.status(500).json({ error: "Server error. Please try again." });
+  }
+});
+
+// ============================================================
+// DELETE /api/notes/:id
+// Header: x-admin-key: ADMIN_KEY
+// ============================================================
+app.delete("/api/notes/:id", async (req, res) => {
+  try {
+    if (req.header("x-admin-key") !== ADMIN_KEY) {
+      return res.status(403).json({ error: "Invalid admin key." });
+    }
+    await Note.findByIdAndDelete(req.params.id);
+    res.json({ message: "Note deleted." });
+  } catch (err) {
+    console.error("Delete note error:", err);
     res.status(500).json({ error: "Server error. Please try again." });
   }
 });

@@ -326,6 +326,45 @@
                     <tbody id="admin-users-tbody"></tbody>
                 </table>
             </div>
+
+            <!-- ============ NOTES MANAGEMENT ============ -->
+            <div style="margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                <h3 style="margin-bottom: 14px;"><i class="fa-solid fa-book"></i> Add a Note</h3>
+                <form id="admin-note-form">
+                    <div class="form-group">
+                        <label for="note-stream">Stream</label>
+                        <select id="note-stream" required>
+                            <option value="">Choose Stream</option>
+                            <option value="science">Science</option>
+                            <option value="arts">Arts</option>
+                            <option value="commerce">Commerce</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="note-dept">Department (type exact value, e.g. computer_science)</label>
+                        <input type="text" id="note-dept" placeholder="e.g. computer_science" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="note-sem">Semester</label>
+                        <input type="text" id="note-sem" placeholder="e.g. 1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="note-title">Title</label>
+                        <input type="text" id="note-title" placeholder="e.g. Programming in C - Core I Notes" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="note-link">Google Drive Link (must be "Anyone with the link")</label>
+                        <input type="url" id="note-link" placeholder="https://drive.google.com/..." required>
+                    </div>
+                    <div id="note-form-msg" style="display:none; margin-bottom: 12px; font-size: 0.85rem;"></div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">
+                        <i class="fa-solid fa-plus"></i> Add Note
+                    </button>
+                </form>
+
+                <h3 style="margin: 24px 0 14px;"><i class="fa-solid fa-list"></i> Existing Notes</h3>
+                <div id="admin-notes-list"></div>
+            </div>
         </div>
     </div>
 
@@ -497,6 +536,112 @@
             adminGate.style.display = "block";
             document.getElementById("admin-key").value = "";
         });
+
+        // ============ NOTES MANAGEMENT LOGIC ============
+        const noteForm = document.getElementById("admin-note-form");
+        const noteFormMsg = document.getElementById("note-form-msg");
+        const adminNotesList = document.getElementById("admin-notes-list");
+
+        function getAdminKey() {
+            return sessionStorage.getItem("adminKey") || document.getElementById("admin-key").value.trim();
+        }
+
+        function showNoteMsg(text, isError) {
+            noteFormMsg.textContent = text;
+            noteFormMsg.style.color = isError ? "var(--color-fail)" : "var(--color-success, #2e7d32)";
+            noteFormMsg.style.display = "block";
+        }
+
+        async function loadAdminNotes() {
+            adminNotesList.innerHTML = '<p style="color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Loading notes...</p>';
+            try {
+                const res = await fetch(ADMIN_API_URL + "/api/notes");
+                const notes = await res.json();
+
+                if (!notes.length) {
+                    adminNotesList.innerHTML = '<p style="color: var(--text-muted);">No notes uploaded yet.</p>';
+                    return;
+                }
+
+                adminNotesList.innerHTML = "";
+                notes.forEach((note) => {
+                    const row = document.createElement("div");
+                    row.style.cssText = "display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border-color);";
+                    row.innerHTML =
+                        '<div style="font-size:0.85rem;">' +
+                            '<strong>' + note.title + '</strong><br>' +
+                            '<span class="muted" style="color:var(--text-muted);">' + note.stream + ' / ' + note.dept + ' / Sem ' + note.semester + '</span>' +
+                        '</div>' +
+                        '<button class="btn btn-secondary btn-sm note-delete-btn" data-id="' + note._id + '" title="Delete note"><i class="fa-solid fa-trash"></i></button>';
+                    adminNotesList.appendChild(row);
+                });
+
+                document.querySelectorAll(".note-delete-btn").forEach((btn) => {
+                    btn.addEventListener("click", async function () {
+                        if (!confirm("Delete this note?")) return;
+                        const id = this.getAttribute("data-id");
+                        try {
+                            const res = await fetch(ADMIN_API_URL + "/api/notes/" + id, {
+                                method: "DELETE",
+                                headers: { "x-admin-key": getAdminKey() }
+                            });
+                            if (res.ok) {
+                                loadAdminNotes();
+                            } else {
+                                alert("Could not delete note.");
+                            }
+                        } catch (err) {
+                            alert("Could not reach the server.");
+                        }
+                    });
+                });
+            } catch (err) {
+                adminNotesList.innerHTML = '<p style="color: var(--color-fail);">Could not load notes. Please try again.</p>';
+            }
+        }
+
+        noteForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+            noteFormMsg.style.display = "none";
+
+            const payload = {
+                stream: document.getElementById("note-stream").value,
+                dept: document.getElementById("note-dept").value.trim(),
+                semester: document.getElementById("note-sem").value.trim(),
+                title: document.getElementById("note-title").value.trim(),
+                link: document.getElementById("note-link").value.trim()
+            };
+
+            try {
+                const res = await fetch(ADMIN_API_URL + "/api/notes", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "x-admin-key": getAdminKey()
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    showNoteMsg(data.error || "Could not add note.", true);
+                    return;
+                }
+
+                showNoteMsg("Note added successfully.", false);
+                noteForm.reset();
+                loadAdminNotes();
+            } catch (err) {
+                showNoteMsg("Could not reach the server. Please try again.", true);
+            }
+        });
+
+        // Load notes whenever the dashboard is opened
+        const originalLoadAdminUsers = loadAdminUsers;
+        loadAdminUsers = async function (key) {
+            await originalLoadAdminUsers(key);
+            loadAdminNotes();
+        };
     </script>
 </body>
 </html>

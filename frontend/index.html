@@ -105,6 +105,328 @@
             color: var(--text-muted);
             line-height: 1.6;
         }
+        .semester-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .sem-select-btn {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 30px 20px;
+            border: 1px solid var(--border-color);
+            text-decoration: none;
+            color: var(--text-main);
+            transition: all var(--transition-normal);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: var(--shadow-sm);
+        }
+        .sem-select-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent);
+        }
+        .sem-select-btn span:first-child {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        body.theme-dark .sem-select-btn span:first-child {
+            color: var(--accent);
+        }
+        .btn-secondary:hover {
+            background-color: var(--border-color) !important;
+        }
+        
+        /* Responsive design for semester grid */
+        @media (max-width: 768px) {
+            .semester-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+                padding: 0 10px;
+            }
+            .sem-select-btn {
+                padding: 24px 16px;
+            }
+            .sem-select-btn span:first-child {
+                font-size: 1.6rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .semester-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+                padding: 0;
+            }
+            .sem-select-btn {
+                padding: 18px 10px;
+                gap: 6px;
+            }
+            .sem-select-btn span:first-child {
+                font-size: 1.4rem;
+            }
+            .sem-select-btn span:last-child {
+                font-size: 0.75rem;
+            }
+        }
+        
+        /* Notes UI Styling */
+        .notes-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+        .notes-tab-btn {
+            background: none;
+            border: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            padding: 8px 20px;
+            cursor: pointer;
+            position: relative;
+            transition: all var(--transition-fast);
+        }
+        .notes-tab-btn:hover {
+            color: var(--primary);
+        }
+        body.theme-dark .notes-tab-btn:hover {
+            color: var(--accent);
+        }
+        .notes-tab-btn.active {
+            color: var(--primary);
+        }
+        body.theme-dark .notes-tab-btn.active {
+            color: var(--accent);
+        }
+        .notes-tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -14px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: var(--accent);
+            border-radius: 2px;
+        }
+        .notes-filter-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            align-items: flex-end;
+            background-color: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+        .notes-filter-form .form-group {
+            margin-bottom: 0;
+            text-align: left;
+        }
+        .notes-filter-form label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+        .notes-filter-form select, .notes-filter-form input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-input);
+            color: var(--text-main);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            outline: none;
+        }
+        .notes-filter-form select:focus, .notes-filter-form input:focus {
+            border-color: var(--accent);
+        }
+        .btn-view-notes {
+            padding: 11px 20px;
+            background-color: var(--primary);
+            color: var(--text-on-primary);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        body.theme-dark .btn-view-notes {
+            background-color: var(--accent);
+            color: var(--primary-dark);
+        }
+        .btn-view-notes:hover {
+            opacity: 0.9;
+        }
+        .notes-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .note-item-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            transition: all var(--transition-normal);
+            box-shadow: var(--shadow-sm);
+        }
+        .note-item-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent);
+        }
+        .note-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .note-icon {
+            font-size: 2.2rem;
+            color: #EF4444; /* PDF color */
+        }
+        .note-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+        .note-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .btn-download-note {
+            padding: 10px 18px;
+            background-color: var(--bg-app);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all var(--transition-fast);
+        }
+        .btn-download-note:hover {
+            background-color: var(--accent);
+            color: var(--primary-dark);
+            border-color: var(--accent);
+        }
+        .empty-state {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 40px 20px;
+            border: 1px dashed var(--border-color);
+            text-align: center;
+            color: var(--text-muted);
+        }
+        .notes-admin-form {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: left;
+            box-shadow: var(--shadow-md);
+        }
+        .notes-admin-form h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        .notes-admin-form .form-group {
+            margin-bottom: 20px;
+        }
+        .notes-admin-form label {
+            display: block;
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+        .notes-admin-form input, .notes-admin-form select {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-input);
+            color: var(--text-main);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all var(--transition-fast);
+        }
+        .notes-admin-form input:focus, .notes-admin-form select:focus {
+            border-color: var(--accent);
+        }
+        .status-banner {
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .status-banner.success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--color-pass);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        .status-banner.error {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--color-fail);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        .btn-admin-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: var(--text-on-primary);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        body.theme-dark .btn-admin-submit {
+            background-color: var(--accent);
+            color: var(--primary-dark);
+        }
+        .btn-admin-submit:hover {
+            opacity: 0.9;
+        }
+        .btn-admin-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
     </style>
 
 </head>
@@ -156,35 +478,161 @@
 
     <!-- Main Workspace Container -->
     <div class="portal-container">
-        <div class="portal-header">
-            <h2 id="welcome-msg">Select Academic Stream</h2>
-            <p>Choose your academic stream to proceed with subject-specific SGPA calculation</p>
+        <!-- Main Options Grid -->
+        <div id="main-options-section">
+            <div class="portal-header">
+                <h2 id="welcome-msg">Welcome, Student!</h2>
+                <p>Select a service to proceed with your academic tracking</p>
+            </div>
+            <div class="stream-grid">
+                <!-- Notes Card -->
+                <a href="#" id="notes-card" class="stream-card arts-card">
+                    <div class="stream-icon">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <h3>Notes Section</h3>
+                    <p>Access study notes, syllabus copies, and academic reference materials.</p>
+                </a>
+                
+                <!-- CGPA Calculator Card -->
+                <a href="#" id="cgpa-calc-card" class="stream-card science-card">
+                    <div class="stream-icon">
+                        <i class="fa-solid fa-calculator"></i>
+                    </div>
+                    <h3>CGPA Calculator</h3>
+                    <p>Calculate your SGPA and track your CGPA progress across semesters.</p>
+                </a>
+            </div>
         </div>
 
-        <div class="stream-grid">
-            <a href="arts.html" class="stream-card arts-card">
-                <div class="stream-icon">
-                    <i class="fa-solid fa-palette"></i>
+        <!-- CGPA Flow Section (hidden by default) -->
+        <div id="cgpa-flow-section" style="display: none;">
+            <!-- Step 1: Choose Stream -->
+            <div id="flow-step-stream">
+                <div class="portal-header">
+                    <h2>Choose Your Stream</h2>
+                    <p>Select your academic stream for the calculator</p>
                 </div>
-                <h3>Arts</h3>
-                <p>BA Honors calculators with custom department profiles &amp; Education practical configurations.</p>
-            </a>
+                <div class="stream-grid">
+                    <a href="#" class="stream-card arts-card stream-select-btn" data-stream="arts">
+                        <div class="stream-icon">
+                            <i class="fa-solid fa-palette"></i>
+                        </div>
+                        <h3>Arts</h3>
+                        <p>BA Honors calculators with department profiles & syllabus rules.</p>
+                    </a>
+                    <a href="#" class="stream-card science-card stream-select-btn" data-stream="science">
+                        <div class="stream-icon">
+                            <i class="fa-solid fa-flask"></i>
+                        </div>
+                        <h3>Science</h3>
+                        <p>BSc Honors calculators with subject-specific templates.</p>
+                    </a>
+                    <a href="#" class="stream-card commerce-card stream-select-btn" data-stream="commerce">
+                        <div class="stream-icon">
+                            <i class="fa-solid fa-coins"></i>
+                        </div>
+                        <h3>Commerce</h3>
+                        <p>BCom Honors calculators with accounting and business profiles.</p>
+                    </a>
+                </div>
+                <button class="btn btn-secondary back-to-main-btn" style="margin-top: 30px; padding: 10px 24px; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main);"><i class="fa-solid fa-arrow-left"></i> Back to Main Menu</button>
+            </div>
 
-            <a href="science.html" class="stream-card science-card">
-                <div class="stream-icon">
-                    <i class="fa-solid fa-flask"></i>
+            <!-- Step 2: Choose Semester -->
+            <div id="flow-step-semester" style="display: none;">
+                <div class="portal-header">
+                    <h2>Select Semester</h2>
+                    <p>Choose the semester you wish to calculate for</p>
                 </div>
-                <h3>Science</h3>
-                <p>BSc Honors calculators for Botany, Physics, Chemistry, Zoology, Computer Science, and Mathematics.</p>
-            </a>
+                <div class="semester-grid">
+                    <a href="#" class="sem-select-btn" data-sem="1">
+                        <span>1st</span>
+                        <span style="font-size: 0.8rem; font-weight: 500; color: var(--text-muted);">NEP-2020</span>
+                    </a>
+                    <a href="#" class="sem-select-btn" data-sem="2">
+                        <span>2nd</span>
+                        <span style="font-size: 0.8rem; font-weight: 500; color: var(--text-muted);">NEP-2020</span>
+                    </a>
+                    <a href="#" class="sem-select-btn" data-sem="3">
+                        <span>3rd</span>
+                        <span style="font-size: 0.8rem; font-weight: 500; color: var(--text-muted);">NEP-2020</span>
+                    </a>
+                    <a href="#" class="sem-select-btn" data-sem="4">
+                        <span>4th</span>
+                        <span style="font-size: 0.8rem; font-weight: 500; color: var(--text-muted);">CBCS</span>
+                    </a>
+                    <a href="#" class="sem-select-btn" data-sem="5">
+                        <span>5th</span>
+                        <span style="font-size: 0.8rem; font-weight: 500; color: var(--text-muted);">CBCS</span>
+                    </a>
+                    <a href="#" class="sem-select-btn" data-sem="6">
+                        <span>6th</span>
+                        <span style="font-size: 0.8rem; font-weight: 500; color: var(--text-muted);">CBCS</span>
+                    </a>
+                </div>
+                <div style="margin-top: 30px; display: flex; justify-content: center; gap: 15px;">
+                    <button id="back-to-streams-btn" class="btn btn-secondary" style="padding: 10px 24px; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main);"><i class="fa-solid fa-arrow-left"></i> Back to Streams</button>
+                </div>
+            </div>
+        </div>
 
-            <a href="commerce.html" class="stream-card commerce-card">
-                <div class="stream-icon">
-                    <i class="fa-solid fa-coins"></i>
+        <!-- Notes Section (hidden by default) -->
+        <div id="notes-section" style="display: none; max-width: 800px; margin: 0 auto;">
+            <div class="portal-header" style="text-align: center;">
+                <h2>Notes & Study Material</h2>
+                <p>Access stream-specific study guides, handwritten notes, and resources.</p>
+            </div>
+
+            <!-- Browse Notes View -->
+            <div id="notes-browse-view" style="display: block;">
+                <!-- Filter Form -->
+                <div class="notes-filter-form">
+                    <div class="form-group">
+                        <label for="notes-stream-select">Select Stream</label>
+                        <select id="notes-stream-select">
+                            <option value="">Choose Stream</option>
+                            <option value="science">Science</option>
+                            <option value="arts">Arts</option>
+                            <option value="commerce">Commerce</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes-dept-select">Select Department</label>
+                        <select id="notes-dept-select">
+                            <option value="">Choose Department</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes-sem-select">Select Semester</label>
+                        <select id="notes-sem-select">
+                            <option value="">Choose Semester</option>
+                            <option value="1">1st Semester</option>
+                            <option value="2">2nd Semester</option>
+                            <option value="3">3rd Semester</option>
+                            <option value="4">4th Semester</option>
+                            <option value="5">5th Semester</option>
+                            <option value="6">6th Semester</option>
+                        </select>
+                    </div>
+                    <button type="button" id="btn-view-notes" class="btn-view-notes">
+                        <i class="fa-solid fa-magnifying-glass"></i> View Notes
+                    </button>
                 </div>
-                <h3>Commerce</h3>
-                <p>BCom Honors calculators with business, marketing, accounting, and CAETR practical components.</p>
-            </a>
+
+                <!-- Notes List -->
+                <div id="notes-list-container">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-circle-info" style="font-size: 2rem; color: var(--accent); margin-bottom: 10px;"></i>
+                        <p style="font-weight: 600;">Please select Stream, Department, and Semester to view notes.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Return Buttons -->
+            <div style="margin-top: 30px; text-align: center; margin-bottom: 40px;">
+                <button class="btn back-to-main-btn" style="padding: 12px 30px; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; border: none; background: var(--primary); color: var(--text-on-primary); transition: all var(--transition-fast);"><i class="fa-solid fa-arrow-left"></i> Back to Main Menu</button>
+            </div>
         </div>
     </div>
 
@@ -203,7 +651,7 @@
         } else {
             if (profileSection) profileSection.style.display = "none";
             if (loginBtn) loginBtn.style.display = "flex";
-            document.getElementById("welcome-msg").textContent = `Select Academic Stream`;
+            document.getElementById("welcome-msg").textContent = `Welcome, Student!`;
         }
 
         // Initialize Theme Toggle State on page load
@@ -244,6 +692,80 @@
             window.location.href = "index.html";
         });
 
+        // State variables for wizard
+        let selectedStream = '';
+
+        const mainOptionsSection = document.getElementById("main-options-section");
+        const cgpaFlowSection = document.getElementById("cgpa-flow-section");
+        const notesSection = document.getElementById("notes-section");
+        const flowStepStream = document.getElementById("flow-step-stream");
+        const flowStepSemester = document.getElementById("flow-step-semester");
+
+        // Main cards click listeners
+        document.getElementById("notes-card").addEventListener("click", (e) => {
+            e.preventDefault();
+            mainOptionsSection.style.display = "none";
+            cgpaFlowSection.style.display = "none";
+            notesSection.style.display = "block";
+        });
+
+        document.getElementById("cgpa-calc-card").addEventListener("click", (e) => {
+            e.preventDefault();
+            mainOptionsSection.style.display = "none";
+            notesSection.style.display = "none";
+            cgpaFlowSection.style.display = "block";
+            flowStepStream.style.display = "block";
+            flowStepSemester.style.display = "none";
+        });
+
+        // Back to main menu listeners
+        document.querySelectorAll(".back-to-main-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                notesSection.style.display = "none";
+                cgpaFlowSection.style.display = "none";
+                mainOptionsSection.style.display = "block";
+            });
+        });
+
+        // Stream select listeners
+        document.querySelectorAll(".stream-select-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                selectedStream = btn.getAttribute("data-stream");
+                flowStepStream.style.display = "none";
+                flowStepSemester.style.display = "block";
+            });
+        });
+
+        // Back to streams select listener
+        document.getElementById("back-to-streams-btn").addEventListener("click", (e) => {
+            e.preventDefault();
+            flowStepSemester.style.display = "none";
+            flowStepStream.style.display = "block";
+        });
+
+        // Semester select listeners
+        document.querySelectorAll(".sem-select-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                const sem = btn.getAttribute("data-sem");
+                if (selectedStream) {
+                    window.location.href = `${selectedStream}.html?semester=${sem}`;
+                }
+            });
+        });
+
+        // Check if redirected from a calculator to choose another stream
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("flow") === "calculator") {
+            mainOptionsSection.style.display = "none";
+            notesSection.style.display = "none";
+            cgpaFlowSection.style.display = "block";
+            flowStepStream.style.display = "block";
+            flowStepSemester.style.display = "none";
+        }
     </script>
+    <script src="notes.js"></script>
 </body>
 </html>
