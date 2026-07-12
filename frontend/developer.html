@@ -243,7 +243,7 @@
                 <div class="dev-card main-dev-card">
                     <div class="dev-avatar-wrapper">
                         <div class="dev-avatar">
-                            <img src="satya.png" alt="Satya Ranjan Pattanayak" class="dev-photo" style="width: 100%; height: 100%; object-fit: cover; object-position: top center; border-radius: 50%;">
+                            <img src="satya.jpeg" alt="Satya Ranjan Pattanayak" class="dev-photo" style="width: 100%; height: 100%; object-fit: cover; object-position: top center; border-radius: 50%;">
                             <div class="avatar-glow"></div>
                         </div>
                     </div>
@@ -341,12 +341,22 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="note-dept">Department (type exact value, e.g. computer_science)</label>
-                        <input type="text" id="note-dept" placeholder="e.g. computer_science" required>
+                        <label for="note-dept">Select Department</label>
+                        <select id="note-dept" required>
+                            <option value="">Choose Stream First</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label for="note-sem">Semester</label>
-                        <input type="text" id="note-sem" placeholder="e.g. 1" required>
+                        <label for="note-sem">Select Semester</label>
+                        <select id="note-sem" required>
+                            <option value="">Choose Semester</option>
+                            <option value="1">1st Semester</option>
+                            <option value="2">2nd Semester</option>
+                            <option value="3">3rd Semester</option>
+                            <option value="4">4th Semester</option>
+                            <option value="5">5th Semester</option>
+                            <option value="6">6th Semester</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="note-title">Title</label>
@@ -538,6 +548,48 @@
         });
 
         // ============ NOTES MANAGEMENT LOGIC ============
+        // Same department list as notes.js — keeping these identical prevents
+        // notes from being saved with a department value students can't match.
+        const noteDeptOptions = {
+            science: [
+                { value: "botany", text: "Botany" },
+                { value: "chemistry", text: "Chemistry" },
+                { value: "computer_science", text: "Computer Science" },
+                { value: "mathematics", text: "Mathematics" },
+                { value: "physics", text: "Physics" },
+                { value: "zoology", text: "Zoology" }
+            ],
+            arts: [
+                { value: "economics", text: "Economics" },
+                { value: "education", text: "Education" },
+                { value: "english", text: "English" },
+                { value: "history", text: "History" },
+                { value: "odia", text: "Odia" },
+                { value: "philosophy", text: "Philosophy" },
+                { value: "political_science", text: "Political Science" },
+                { value: "sanskrit", text: "Sanskrit" }
+            ],
+            commerce: [
+                { value: "general", text: "Commerce Honors / General" }
+            ]
+        };
+
+        const noteStreamSelect = document.getElementById("note-stream");
+        const noteDeptSelect = document.getElementById("note-dept");
+
+        noteStreamSelect.addEventListener("change", function () {
+            const val = this.value;
+            noteDeptSelect.innerHTML = '<option value="">Choose Department</option>';
+            if (val && noteDeptOptions[val]) {
+                noteDeptOptions[val].forEach((dept) => {
+                    const opt = document.createElement("option");
+                    opt.value = dept.value;
+                    opt.textContent = dept.text;
+                    noteDeptSelect.appendChild(opt);
+                });
+            }
+        });
+
         const noteForm = document.getElementById("admin-note-form");
         const noteFormMsg = document.getElementById("note-form-msg");
         const adminNotesList = document.getElementById("admin-notes-list");
@@ -606,8 +658,8 @@
 
             const payload = {
                 stream: document.getElementById("note-stream").value,
-                dept: document.getElementById("note-dept").value.trim(),
-                semester: document.getElementById("note-sem").value.trim(),
+                dept: document.getElementById("note-dept").value,
+                semester: document.getElementById("note-sem").value,
                 title: document.getElementById("note-title").value.trim(),
                 link: document.getElementById("note-link").value.trim()
             };
