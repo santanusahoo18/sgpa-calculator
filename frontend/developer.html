@@ -46,6 +46,63 @@
             border-color: var(--accent);
         }
 
+        /* Developer grid: side-by-side cards for both developers */
+        .developer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        /* Mobile view: stack cards, tighten spacing */
+        @media (max-width: 480px) {
+            .developer-page-container {
+                margin: 20px auto;
+                padding: 0 14px;
+            }
+            .developer-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .developer-grid .dev-card.main-dev-card {
+                padding: 16px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .developer-grid .dev-avatar-wrapper {
+                width: 100px !important;
+                height: 100px !important;
+                margin: 0 auto 30px auto !important;
+                transform: none !important;
+                top: auto !important;
+                bottom: auto !important;
+                position: relative !important;
+                z-index: 1;
+            }
+            .developer-grid .dev-info {
+                margin: 0 !important;
+                padding: 0 !important;
+                transform: none !important;
+                top: auto !important;
+                position: static !important;
+                text-align: center;
+                width: 100%;
+            }
+            .developer-grid .dev-label {
+                display: block !important;
+                position: static !important;
+                margin: 0 0 6px 0 !important;
+                transform: none !important;
+                top: auto !important;
+            }
+            .developer-grid .dev-name {
+                margin: 0 0 6px 0 !important;
+            }
+            .developer-grid .dev-subtext {
+                margin: 0 !important;
+            }
+        }
+
         /* ============ ADMIN PANEL ============ */
         .admin-panel-wrap {
             max-width: 600px;
@@ -163,11 +220,11 @@
     <div class="developer-page-container">
         <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Streams</a>
 
-        <!-- Developer Section -->
+        <!-- Developer Section (both developers in one grid) -->
         <section class="developer-section" id="developer-section" style="border-top: none; margin-top: 0; padding-top: 0;">
             <h2 class="section-title">Developer Hub</h2>
             <div class="developer-grid">
-                <!-- Developer Profile Card -->
+                <!-- Developer Profile Card 1 -->
                 <div class="dev-card main-dev-card">
                     <div class="dev-avatar-wrapper">
                         <div class="dev-avatar">
@@ -179,6 +236,21 @@
                         <span class="dev-label">Developed by</span>
                         <h3 class="dev-name">Santanu Sahoo</h3>
                         <p class="dev-subtext">17th CSE, IGIT Sarang ( 2024-28 )</p>
+                    </div>
+                </div>
+
+                <!-- Developer Profile Card 2 -->
+                <div class="dev-card main-dev-card">
+                    <div class="dev-avatar-wrapper">
+                        <div class="dev-avatar">
+                            <img src="satya.png" alt="Satya Ranjan Pattanayak" class="dev-photo" style="width: 100%; height: 100%; object-fit: cover; object-position: top center; border-radius: 50%;">
+                            <div class="avatar-glow"></div>
+                        </div>
+                    </div>
+                    <div class="dev-info">
+                        <span class="dev-label">Developed by</span>
+                        <h3 class="dev-name">Satya Ranjan Pattanayak</h3>
+                        <p class="dev-subtext">NIT BBSR (2024-28)</p>
                     </div>
                 </div>
             </div>
