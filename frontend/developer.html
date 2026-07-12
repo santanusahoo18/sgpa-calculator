@@ -45,6 +45,69 @@
             background: var(--accent);
             border-color: var(--accent);
         }
+
+        /* ============ ADMIN PANEL ============ */
+        .admin-panel-wrap {
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+        .admin-toggle-row {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .admin-gate-card {
+            text-align: left;
+        }
+        .admin-gate-card .form-group { margin-bottom: 16px; }
+        .admin-gate-card label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+        .admin-error {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: rgba(239, 68, 68, 0.08);
+            color: var(--color-fail);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 10px 12px;
+            border-radius: var(--radius-md);
+            font-size: 0.82rem;
+            margin-bottom: 16px;
+        }
+        .remember-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 18px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+        .remember-row input { width: auto; margin: 0; }
+
+        .admin-summary-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .admin-table-wrap { overflow-x: auto; }
+        #admin-users-table { min-width: 560px; }
+        #admin-users-table td.muted { color: var(--text-muted); }
+        .admin-loading, .admin-empty {
+            text-align: center;
+            padding: 30px 10px;
+            color: var(--text-muted);
+        }
+        .admin-dashboard-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
     </style>
 </head>
 <body class="theme-light">
@@ -122,6 +185,78 @@
         </section>
     </div>
 
+    <!-- ============ ADMIN PANEL (only useful to the developer) ============ -->
+    <div class="admin-panel-wrap">
+        <div class="admin-toggle-row">
+            <button class="btn btn-secondary btn-sm" id="admin-toggle-btn">
+                <i class="fa-solid fa-user-shield"></i> View Registered Users (Admin)
+            </button>
+        </div>
+
+        <!-- Key entry gate -->
+        <div class="card admin-gate-card" id="admin-gate" style="display:none; margin-top: 20px;">
+            <div id="admin-error" class="admin-error">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span id="admin-error-message">Invalid admin key.</span>
+            </div>
+            <form id="admin-gate-form">
+                <div class="form-group">
+                    <label for="admin-key">Admin Key</label>
+                    <input type="password" id="admin-key" placeholder="Enter admin key" required autocomplete="off">
+                </div>
+                <div class="remember-row">
+                    <input type="checkbox" id="admin-remember">
+                    <label for="admin-remember" style="margin:0; font-weight:500;">Remember for this browser tab (session only)</label>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">
+                    <i class="fa-solid fa-unlock"></i> Unlock
+                </button>
+            </form>
+        </div>
+
+        <!-- Dashboard (shown after successful key check) -->
+        <div class="card" id="admin-dashboard" style="display:none; margin-top: 20px;">
+            <div class="admin-dashboard-actions">
+                <button class="btn btn-secondary btn-sm" id="admin-refresh-btn"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                <button class="btn btn-secondary btn-sm" id="admin-lock-btn"><i class="fa-solid fa-lock"></i> Lock</button>
+            </div>
+
+            <div class="admin-summary-row">
+                <div class="stat-box">
+                    <div class="stat-icon"><i class="fa-solid fa-user-group"></i></div>
+                    <div class="stat-value" id="admin-total-users">-</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon"><i class="fa-solid fa-right-to-bracket"></i></div>
+                    <div class="stat-value" id="admin-total-logins">-</div>
+                    <div class="stat-label">Total Logins</div>
+                </div>
+            </div>
+
+            <div class="admin-table-wrap">
+                <div id="admin-loading" class="admin-loading">
+                    <i class="fa-solid fa-spinner fa-spin"></i> Loading users...
+                </div>
+                <div id="admin-empty" class="admin-empty" style="display:none;">
+                    No registered users yet.
+                </div>
+                <table id="admin-users-table" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Registered</th>
+                            <th>Last Login</th>
+                            <th>Logins</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-users-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Load session info
         const userStr = localStorage.getItem("loggedInUser");
@@ -174,6 +309,119 @@
             localStorage.removeItem("token");
             localStorage.removeItem("userName");
             window.location.href = "index.html";
+        });
+
+        // ============ ADMIN PANEL LOGIC ============
+        const ADMIN_API_URL = "https://sgpa-calculator-g0c8.onrender.com";
+
+        const adminToggleBtn = document.getElementById("admin-toggle-btn");
+        const adminGate = document.getElementById("admin-gate");
+        const adminDashboard = document.getElementById("admin-dashboard");
+        const adminGateForm = document.getElementById("admin-gate-form");
+        const adminError = document.getElementById("admin-error");
+        const adminErrorMsg = document.getElementById("admin-error-message");
+        const adminRemember = document.getElementById("admin-remember");
+
+        const adminLoading = document.getElementById("admin-loading");
+        const adminEmpty = document.getElementById("admin-empty");
+        const adminTable = document.getElementById("admin-users-table");
+        const adminTbody = document.getElementById("admin-users-tbody");
+
+        function formatAdminDate(iso) {
+            if (!iso) return "Never";
+            return new Date(iso).toLocaleString();
+        }
+
+        async function loadAdminUsers(key) {
+            adminLoading.style.display = "block";
+            adminEmpty.style.display = "none";
+            adminTable.style.display = "none";
+
+            try {
+                const res = await fetch(ADMIN_API_URL + "/api/admin/users?key=" + encodeURIComponent(key));
+                const data = await res.json();
+
+                if (!res.ok) {
+                    sessionStorage.removeItem("adminKey");
+                    adminDashboard.style.display = "none";
+                    adminGate.style.display = "block";
+                    adminErrorMsg.textContent = data.error || "Invalid admin key.";
+                    adminError.style.display = "flex";
+                    return;
+                }
+
+                const totalLogins = data.reduce((sum, u) => sum + (u.loginCount || 0), 0);
+                document.getElementById("admin-total-users").textContent = data.length;
+                document.getElementById("admin-total-logins").textContent = totalLogins;
+
+                adminLoading.style.display = "none";
+
+                if (data.length === 0) {
+                    adminEmpty.style.display = "block";
+                    return;
+                }
+
+                adminTbody.innerHTML = "";
+                data
+                    .slice()
+                    .sort((a, b) => new Date(b.registeredAt) - new Date(a.registeredAt))
+                    .forEach((u) => {
+                        const tr = document.createElement("tr");
+                        tr.innerHTML =
+                            '<td style="font-weight:700;">' + u.name + '</td>' +
+                            '<td class="muted">' + u.email + '</td>' +
+                            '<td class="muted">' + formatAdminDate(u.registeredAt) + '</td>' +
+                            '<td class="muted">' + formatAdminDate(u.lastLogin) + '</td>' +
+                            '<td>' + (u.loginCount || 0) + '</td>';
+                        adminTbody.appendChild(tr);
+                    });
+
+                adminTable.style.display = "table";
+
+            } catch (err) {
+                adminLoading.style.display = "none";
+                adminEmpty.style.display = "block";
+                adminEmpty.textContent = "Could not reach the server. Please try again in a moment.";
+            }
+        }
+
+        adminToggleBtn.addEventListener("click", function () {
+            const savedKey = sessionStorage.getItem("adminKey");
+            if (savedKey) {
+                adminGate.style.display = "none";
+                adminDashboard.style.display = "block";
+                loadAdminUsers(savedKey);
+            } else {
+                adminGate.style.display = adminGate.style.display === "none" ? "block" : "none";
+            }
+        });
+
+        adminGateForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            adminError.style.display = "none";
+
+            const key = document.getElementById("admin-key").value.trim();
+            if (!key) return;
+
+            if (adminRemember.checked) {
+                sessionStorage.setItem("adminKey", key);
+            }
+
+            adminGate.style.display = "none";
+            adminDashboard.style.display = "block";
+            loadAdminUsers(key);
+        });
+
+        document.getElementById("admin-refresh-btn").addEventListener("click", function () {
+            const key = sessionStorage.getItem("adminKey") || document.getElementById("admin-key").value.trim();
+            loadAdminUsers(key);
+        });
+
+        document.getElementById("admin-lock-btn").addEventListener("click", function () {
+            sessionStorage.removeItem("adminKey");
+            adminDashboard.style.display = "none";
+            adminGate.style.display = "block";
+            document.getElementById("admin-key").value = "";
         });
     </script>
 </body>

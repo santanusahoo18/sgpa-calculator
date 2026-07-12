@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname, "../frontend")));
 const PORT = 3000;
 const JWT_SECRET =
   "e33d1b2b84c198e7d639ad9475d3512313274f7d03839d5ce63ea76953feb9b5";
-const ADMIN_KEY = "86ab01b926b7e0c71a022c21b4f69b65f033b2c891c2b5eb"; // used to view the user list
+const ADMIN_KEY = "sd@123"; // used to view the user list
 
 // ---------- DATA STORAGE ----------
 const DATA_DIR = path.join(__dirname, "data");
