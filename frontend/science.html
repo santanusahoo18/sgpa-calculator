@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Science SGPA Calculator - Fakir Mohan University</title>
+    <title>Science - Note Mate</title>
     <link rel="stylesheet" href="style.css">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -114,16 +114,13 @@
                 <i class="fa-solid fa-graduation-cap"></i>
             </div>
             <div class="logo-text">
-                <h1>BSc Honors Calculator</h1>
-                <p>Science Tabulation System</p>
+                <h1>Note Mate</h1>
+                <p>Fakir Mohan University Portal</p>
             </div>
         </div>
         <!-- Stream Menu Bar Switcher -->
         <nav class="stream-menu-bar">
             <a href="index.html" class="menu-item" id="menu-home"><i class="fa-solid fa-house"></i> <span>Home</span></a>
-            <a href="arts.html" class="menu-item" id="menu-arts"><i class="fa-solid fa-palette"></i> <span>Arts</span></a>
-            <a href="science.html" class="menu-item active" id="menu-science"><i class="fa-solid fa-flask"></i> <span>Science</span></a>
-            <a href="commerce.html" class="menu-item" id="menu-commerce"><i class="fa-solid fa-coins"></i> <span>Commerce</span></a>
             <a href="developer.html" class="menu-item" id="menu-developer"><i class="fa-solid fa-laptop-code"></i> <span>Developer</span></a>
         </nav>
         <div class="header-actions">
@@ -136,6 +133,9 @@
             </div>
             <a id="header-login-btn" href="login.html" class="icon-btn" title="Login" style="display: none; width: 32px; height: 32px; font-size: 0.95rem; text-decoration: none;">
                 <i class="fa-solid fa-right-to-bracket"></i>
+            </a>
+            <a href="https://chat.whatsapp.com/DN6pyvfQvkZ8tztc1RbA2e?s=sh&p=a&ilr=0" target="_blank" class="icon-btn" title="Join WhatsApp Group" style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; font-size: 1.1rem; text-decoration: none; color: #fff; background-color: #25D366; border-radius: 50%; box-shadow: var(--shadow-sm); margin-right: 5px;">
+                <i class="fa-brands fa-whatsapp"></i>
             </a>
             <button id="theme-toggle-btn" class="icon-btn" title="Toggle Theme">
                 <i class="fa-solid fa-moon"></i>
@@ -152,6 +152,16 @@
                 <div class="card header-card">
                     <h2>Science Tabulation Calculator - <span id="semester-display">1st Semester</span></h2>
                     <p>Select your major department and semester below. The system automatically populates credit requirements and subject profiles according to FMU syllabus rules.</p>
+                    
+                    <!-- Calculator Mode Selector -->
+                    <div class="calculator-type-selector" style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="button" class="btn btn-sm active" id="calc-mode-marks" style="font-weight: 700; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.15); color: #fff;">
+                            <i class="fa-solid fa-square-poll-vertical"></i> Marks Calculator
+                        </button>
+                        <button type="button" class="btn btn-sm" id="calc-mode-grade" style="font-weight: 700; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); color: #fff;">
+                            <i class="fa-solid fa-award"></i> Grade Calculator
+                        </button>
+                    </div>
                     
                     <div class="control-grid" style="margin-top: 25px;">
                         <div class="input-group">

@@ -82,6 +82,7 @@ const deptOptions = {
 
 const NotesManager = {
   notes: [],
+  currentType: "notes", // "notes" or "pyq" — controlled by the tab buttons
 
   async init() {
     this.setupEventListeners();
@@ -89,17 +90,22 @@ const NotesManager = {
     await this.loadNotes();
   },
 
-  // Fetch notes from the backend (shared across all users/devices).
+  // Fetch notes (or PYQs) from the backend (shared across all users/devices).
   // Falls back to the built-in default list if the server is unreachable.
   async loadNotes() {
     try {
-      const res = await fetch(NOTES_API_URL + "/api/notes");
+      const res = await fetch(
+        NOTES_API_URL + "/api/notes?type=" + this.currentType,
+      );
       if (!res.ok) throw new Error("Bad response");
       const serverNotes = await res.json();
-      this.notes = serverNotes.length > 0 ? serverNotes : [...defaultNotes];
+      this.notes =
+        this.currentType === "notes" && serverNotes.length === 0
+          ? [...defaultNotes]
+          : serverNotes;
     } catch (err) {
       console.warn("Could not reach notes server, using default notes.", err);
-      this.notes = [...defaultNotes];
+      this.notes = this.currentType === "notes" ? [...defaultNotes] : [];
     }
   },
 
@@ -117,6 +123,33 @@ const NotesManager = {
     if (viewBtn) {
       viewBtn.addEventListener("click", () => this.filterNotes());
     }
+
+    // Tab buttons: switch between Notes and PYQ
+    const tabButtons = document.querySelectorAll(".notes-tab-btn");
+    tabButtons.forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const type = btn.getAttribute("data-type");
+        if (!type || type === this.currentType) return;
+
+        tabButtons.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        this.currentType = type;
+        await this.loadNotes();
+
+        // Re-show the "please select filters" prompt on tab switch
+        const container = document.getElementById("notes-list-container");
+        if (container) {
+          const label = type === "pyq" ? "PYQs" : "notes";
+          container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fa-solid fa-circle-info" style="font-size: 2rem; color: var(--accent); margin-bottom: 10px;"></i>
+                            <p style="font-weight: 600;">Please select Stream, Department, and Semester to view ${label}.</p>
+                        </div>
+                    `;
+        }
+      });
+    });
   },
 
   updateDeptSelects() {
@@ -146,6 +179,7 @@ const NotesManager = {
     const dept = document.getElementById("notes-dept-select").value;
     const sem = document.getElementById("notes-sem-select").value;
     const container = document.getElementById("notes-list-container");
+    const label = this.currentType === "pyq" ? "PYQs" : "notes";
 
     if (!container) return;
 
@@ -153,7 +187,7 @@ const NotesManager = {
       container.innerHTML = `
                 <div class="empty-state">
                     <i class="fa-solid fa-circle-info" style="font-size: 2rem; color: var(--accent); margin-bottom: 10px;"></i>
-                    <p style="font-weight: 600;">Please select Stream, Department, and Semester to view notes.</p>
+                    <p style="font-weight: 600;">Please select Stream, Department, and Semester to view ${label}.</p>
                 </div>
             `;
       return;
@@ -170,8 +204,8 @@ const NotesManager = {
       container.innerHTML = `
                 <div class="empty-state">
                     <i class="fa-solid fa-folder-open" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 10px;"></i>
-                    <p style="font-weight: 600;">No notes found for this combination.</p>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">Request your coordinator or an admin to upload notes.</p>
+                    <p style="font-weight: 600;">No ${label} found for this combination.</p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Request your coordinator or an admin to upload ${label}.</p>
                 </div>
             `;
       return;
@@ -180,16 +214,19 @@ const NotesManager = {
     filtered.forEach((note) => {
       const card = document.createElement("div");
       card.className = "note-item-card";
+      const icon =
+        this.currentType === "pyq" ? "fa-file-circle-question" : "fa-file-pdf";
+      const btnLabel = this.currentType === "pyq" ? "Open PYQ" : "Open Notes";
       card.innerHTML = `
                 <div class="note-info">
-                    <i class="fa-solid fa-file-pdf note-icon"></i>
+                    <i class="fa-solid ${icon} note-icon"></i>
                     <div style="text-align: left;">
                         <h4 class="note-title">${note.title}</h4>
                         <span class="note-meta">${note.dept.toUpperCase().replace("_", " ")} | Semester ${note.semester}</span>
                     </div>
                 </div>
                 <a href="${note.link}" target="_blank" class="btn btn-download-note">
-                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Notes
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> ${btnLabel}
                 </a>
             `;
       container.appendChild(card);

@@ -187,16 +187,13 @@
                 <i class="fa-solid fa-graduation-cap"></i>
             </div>
             <div class="logo-text">
-                <h1>SGPA Calculator</h1>
-                <p>Fakir Mohan University Tabulation System</p>
+                <h1>Note Mate</h1>
+                <p>Fakir Mohan University Portal</p>
             </div>
         </div>
         <!-- Stream Menu Bar Switcher -->
         <nav class="stream-menu-bar">
             <a href="index.html" class="menu-item" id="menu-home"><i class="fa-solid fa-house"></i> <span>Home</span></a>
-            <a href="arts.html" class="menu-item" id="menu-arts"><i class="fa-solid fa-palette"></i> <span>Arts</span></a>
-            <a href="science.html" class="menu-item" id="menu-science"><i class="fa-solid fa-flask"></i> <span>Science</span></a>
-            <a href="commerce.html" class="menu-item" id="menu-commerce"><i class="fa-solid fa-coins"></i> <span>Commerce</span></a>
             <a href="developer.html" class="menu-item active" id="menu-developer"><i class="fa-solid fa-laptop-code"></i> <span>Developer</span></a>
         </nav>
         <div class="header-actions">
@@ -209,6 +206,9 @@
             </div>
             <a id="header-login-btn" href="login.html" class="icon-btn" title="Login" style="display: none; width: 32px; height: 32px; font-size: 0.95rem; text-decoration: none;">
                 <i class="fa-solid fa-right-to-bracket"></i>
+            </a>
+            <a href="https://chat.whatsapp.com/DN6pyvfQvkZ8tztc1RbA2e?s=sh&p=a&ilr=0" target="_blank" class="icon-btn" title="Join WhatsApp Group" style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; font-size: 1.1rem; text-decoration: none; color: #fff; background-color: #25D366; border-radius: 50%; box-shadow: var(--shadow-sm); margin-right: 5px;">
+                <i class="fa-brands fa-whatsapp"></i>
             </a>
             <button id="theme-toggle-btn" class="icon-btn" title="Toggle Theme">
                 <i class="fa-solid fa-moon"></i>
@@ -261,7 +261,7 @@
     <div class="admin-panel-wrap">
         <div class="admin-toggle-row">
             <button class="btn btn-secondary btn-sm" id="admin-toggle-btn">
-                <i class="fa-solid fa-user-shield"></i> View Registered Users (Admin)
+                <i class="fa-solid fa-user-shield"></i>Admin Panel
             </button>
         </div>
 
@@ -329,8 +329,15 @@
 
             <!-- ============ NOTES MANAGEMENT ============ -->
             <div style="margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 20px;">
-                <h3 style="margin-bottom: 14px;"><i class="fa-solid fa-book"></i> Add a Note</h3>
+                <h3 style="margin-bottom: 14px;"><i class="fa-solid fa-book"></i> Add a Note or PYQ</h3>
                 <form id="admin-note-form">
+                    <div class="form-group">
+                        <label for="note-type">Resource Type</label>
+                        <select id="note-type" required>
+                            <option value="notes">Notes</option>
+                            <option value="pyq">PYQ (Previous Year Questions)</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="note-stream">Stream</label>
                         <select id="note-stream" required>
@@ -368,7 +375,7 @@
                     </div>
                     <div id="note-form-msg" style="display:none; margin-bottom: 12px; font-size: 0.85rem;"></div>
                     <button type="submit" class="btn btn-primary" style="width:100%;">
-                        <i class="fa-solid fa-plus"></i> Add Note
+                        <i class="fa-solid fa-plus"></i> Add Resource
                     </button>
                 </form>
 
@@ -618,9 +625,11 @@
                 adminNotesList.innerHTML = "";
                 notes.forEach((note) => {
                     const row = document.createElement("div");
+                    const typeLabel = note.type === "pyq" ? "PYQ" : "Notes";
                     row.style.cssText = "display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border-color);";
                     row.innerHTML =
                         '<div style="font-size:0.85rem;">' +
+                            '<span style="display:inline-block; font-size:0.7rem; font-weight:700; padding:2px 8px; border-radius:10px; background:var(--accent); color:var(--primary-dark); margin-bottom:4px;">' + typeLabel + '</span><br>' +
                             '<strong>' + note.title + '</strong><br>' +
                             '<span class="muted" style="color:var(--text-muted);">' + note.stream + ' / ' + note.dept + ' / Sem ' + note.semester + '</span>' +
                         '</div>' +
@@ -661,7 +670,8 @@
                 dept: document.getElementById("note-dept").value,
                 semester: document.getElementById("note-sem").value,
                 title: document.getElementById("note-title").value.trim(),
-                link: document.getElementById("note-link").value.trim()
+                link: document.getElementById("note-link").value.trim(),
+                type: document.getElementById("note-type").value
             };
 
             try {

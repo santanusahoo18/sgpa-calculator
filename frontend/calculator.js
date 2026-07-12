@@ -194,7 +194,8 @@ const state = {
     activeTab: 'calc',
     syllabusMode: 'nep',
     subjects: [],
-    history: []
+    history: [],
+    calcMode: 'marks'
 };
 
 const CalculatorController = {
@@ -303,6 +304,35 @@ const CalculatorController = {
 
         const printBtn = document.getElementById('custom-print-btn');
         if (printBtn) printBtn.addEventListener('click', () => this.printGradeSheet());
+        // Calculator Mode Toggles (Marks vs Grade)
+        const btnModeMarks = document.getElementById('calc-mode-marks');
+        const btnModeGrade = document.getElementById('calc-mode-grade');
+
+        if (btnModeMarks && btnModeGrade) {
+            btnModeMarks.addEventListener('click', () => this.switchCalcMode('marks'));
+            btnModeGrade.addEventListener('click', () => this.switchCalcMode('grade'));
+        }
+    },
+
+    switchCalcMode(mode) {
+        state.calcMode = mode;
+        const btnMarks = document.getElementById('calc-mode-marks');
+        const btnGrade = document.getElementById('calc-mode-grade');
+        if (btnMarks && btnGrade) {
+            if (mode === 'marks') {
+                btnMarks.classList.add('active');
+                btnMarks.style.background = 'rgba(255,255,255,0.15)';
+                btnGrade.classList.remove('active');
+                btnGrade.style.background = 'rgba(255,255,255,0.05)';
+            } else {
+                btnGrade.classList.add('active');
+                btnGrade.style.background = 'rgba(255,255,255,0.15)';
+                btnMarks.classList.remove('active');
+                btnMarks.style.background = 'rgba(255,255,255,0.05)';
+            }
+        }
+        this.renderHeaders();
+        this.renderTableRows();
     },
 
     detectSyllabusAndLoad() {
@@ -333,6 +363,18 @@ const CalculatorController = {
     renderHeaders() {
         const headerRow = document.getElementById("table-headers-row");
         if (!headerRow) return;
+
+        if (state.calcMode === 'grade') {
+            headerRow.innerHTML = `
+                <th style="min-width: 240px; text-align: left;">Paper / Subject</th>
+                <th>Credits (CR)</th>
+                <th>Practical?</th>
+                <th style="min-width: 150px;">Select Grade</th>
+                <th>GP</th>
+                <th>CP</th>
+            `;
+            return;
+        }
 
         if (state.syllabusMode === 'cbcs') {
             headerRow.innerHTML = `
@@ -508,7 +550,31 @@ const CalculatorController = {
                 maxEndPr = 0;
             }
 
-            if (state.syllabusMode === 'cbcs') {
+            if (state.calcMode === 'grade') {
+                tr.innerHTML = `
+                    <td data-label="Subject" style="text-align: left; font-weight: 600;">${s.name}</td>
+                    <td data-label="Credits (CR)">${s.cr}</td>
+                    <td data-label="Practical?">
+                        <button class="practical-toggle-btn ${s.hasPr ? 'active' : ''}" onclick="CalculatorController.togglePractical(${idx})" disabled>
+                            ${s.hasPr ? 'Yes' : 'No'}
+                        </button>
+                    </td>
+                    <td data-label="Select Grade">
+                        <select onchange="CalculatorController.updateGrade(${idx}, this.value)" class="input-table" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); font-weight: 700; border-radius: var(--radius-sm);">
+                            <option value="" ${!s.grade ? 'selected' : ''}>-- Grade --</option>
+                            <option value="O" ${s.grade === 'O' ? 'selected' : ''}>O (Outstanding)</option>
+                            <option value="E" ${s.grade === 'E' ? 'selected' : ''}>E (Excellent)</option>
+                            <option value="A" ${s.grade === 'A' ? 'selected' : ''}>A (Very Good)</option>
+                            <option value="B" ${s.grade === 'B' ? 'selected' : ''}>B (Good)</option>
+                            <option value="C" ${s.grade === 'C' ? 'selected' : ''}>C (Fair)</option>
+                            <option value="D" ${s.grade === 'D' ? 'selected' : ''}>D (Pass)</option>
+                            <option value="F" ${s.grade === 'F' ? 'selected' : ''}>F (Fail)</option>
+                        </select>
+                    </td>
+                    <td data-label="GP" id="gp-${idx}" style="font-weight: 600;">0</td>
+                    <td data-label="CP" id="cp-${idx}" style="font-weight: 700; color: var(--primary);">0</td>
+                `;
+            } else if (state.syllabusMode === 'cbcs') {
                 tr.innerHTML = `
                     <td data-label="Subject" style="text-align: left; font-weight: 600;">${s.name}</td>
                     <td data-label="Credits (CR)">${s.cr}</td>
@@ -615,6 +681,12 @@ const CalculatorController = {
         this.renderTableRows();
     },
 
+    updateGrade(idx, val) {
+        state.subjects[idx].grade = val;
+        this.recalculateRow(idx);
+        this.calculateOverall();
+    },
+
     updateMark(idx, field, val) {
         state.subjects[idx][field] = parseFloat(val) || 0;
         this.recalculateRow(idx);
@@ -623,6 +695,19 @@ const CalculatorController = {
 
     recalculateRow(index) {
         const s = state.subjects[index];
+        if (state.calcMode === 'grade') {
+            const gradePoints = { 'O': 10, 'E': 9, 'A': 8, 'B': 7, 'C': 6, 'D': 5, 'F': 0 };
+            const grade = s.grade || 'F';
+            const gp = gradePoints[grade] || 0;
+            const cp = gp * s.cr;
+
+            const gpEl = document.getElementById(`gp-${index}`);
+            if (gpEl) gpEl.textContent = gp;
+            
+            const cpEl = document.getElementById(`cp-${index}`);
+            if (cpEl) cpEl.textContent = cp;
+            return;
+        }
         const isEthics = s.name.includes('Ethics') || s.name.includes('AECC-EV') || false;
         const isEVS = s.name.includes('EVS') || false;
 
@@ -725,86 +810,99 @@ const CalculatorController = {
         const warnings = [];
 
         state.subjects.forEach((s, idx) => {
-            const ms = parseFloat(document.getElementById(`total-${idx}`).textContent) || 0;
+            let ms = 0;
+            let paperMax = 0;
             const gp = parseInt(document.getElementById(`gp-${idx}`).textContent) || 0;
             const cp = parseFloat(document.getElementById(`cp-${idx}`).textContent) || 0;
+
+            if (state.calcMode === 'grade') {
+                const gpMarks = { 10: 95, 9: 85, 8: 75, 7: 65, 6: 55, 5: 48, 4: 42, 0: 0 };
+                ms = gpMarks[gp] || 0;
+                paperMax = 100;
+            } else {
+                const totalEl = document.getElementById(`total-${idx}`);
+                ms = totalEl ? (parseFloat(totalEl.textContent) || 0) : 0;
+                const isEthics = s.name.includes('Ethics') || s.name.includes('AECC-EV') || false;
+                paperMax = (state.syllabusMode === 'cbcs' && (isEthics || s.cr === 1)) ? 25 : 100;
+            }
 
             totalCR += s.cr;
             totalCP += cp;
             totalSecured += ms;
-            
-            const isEthics = s.name.includes('Ethics') || s.name.includes('AECC-EV') || false;
-            const isEVS = s.name.includes('EVS') || false;
-            const paperMax = (state.syllabusMode === 'cbcs' && (isEthics || s.cr === 1)) ? 25 : 100;
             totalMax += paperMax;
 
             if (gp === 0) hasFails = true;
 
-            // pass margins
-            let endThPassMin = 0;
-            let endPrPassMin = 0;
-            let endThMax = 0;
-            let endPrMax = 0;
+            if (state.calcMode !== 'grade') {
+                const isEthics = s.name.includes('Ethics') || s.name.includes('AECC-EV') || false;
+                const isEVS = s.name.includes('EVS') || false;
 
-            if (state.syllabusMode === 'cbcs') {
-                if (isEthics || s.cr === 1) {
-                    endThPassMin = 10;
-                    endThMax = 25;
+                // pass margins
+                let endThPassMin = 0;
+                let endPrPassMin = 0;
+                let endThMax = 0;
+                let endPrMax = 0;
+
+                if (state.syllabusMode === 'cbcs') {
+                    if (isEthics || s.cr === 1) {
+                        endThPassMin = 10;
+                        endThMax = 25;
+                    } else {
+                        endThPassMin = s.hasPr ? 24 : 32;
+                        endThMax = s.hasPr ? 60 : 80;
+                    }
+                    endPrPassMin = 10;
+                    endPrMax = 25;
                 } else {
-                    endThPassMin = s.hasPr ? 24 : 32;
-                    endThMax = s.hasPr ? 60 : 80;
+                    if (isEVS) {
+                        endThPassMin = 40;
+                        endThMax = 100;
+                    } else {
+                        endThPassMin = s.hasPr ? 20 : 24;
+                        endThMax = s.hasPr ? 50 : 60;
+                    }
+                    endPrPassMin = 8;
+                    endPrMax = 20;
                 }
-                endPrPassMin = 10;
-                endPrMax = 25;
-            } else {
-                if (isEVS) {
+
+                if (s.isPRJ) {
                     endThPassMin = 40;
                     endThMax = 100;
-                } else {
-                    endThPassMin = s.hasPr ? 20 : 24;
-                    endThMax = s.hasPr ? 50 : 60;
-                }
-                endPrPassMin = 8;
-                endPrMax = 20;
-            }
-
-            if (s.isPRJ) {
-                endThPassMin = 40;
-                endThMax = 100;
-            } else if (s.isBRMP) {
-                endThPassMin = 20;
-                endThMax = 50;
-            }
-
-            if (ms > 0) {
-                if (s.endTh < endThPassMin && !isEthics && !isEVS) {
-                    warnings.push({
-                        type: 'theory',
-                        subject: s.name,
-                        secured: s.endTh,
-                        min: endThPassMin,
-                        max: endThMax
-                    });
+                } else if (s.isBRMP) {
+                    endThPassMin = 20;
+                    endThMax = 50;
                 }
 
-                if (s.hasPr && s.endPr < endPrPassMin) {
-                    warnings.push({
-                        type: 'practical',
-                        subject: s.name,
-                        secured: s.endPr,
-                        min: endPrPassMin,
-                        max: endPrMax
-                    });
-                }
+                if (ms > 0) {
+                    if (s.endTh < endThPassMin && !isEthics && !isEVS) {
+                        warnings.push({
+                            type: 'theory',
+                            subject: s.name,
+                            secured: s.endTh,
+                            min: endThPassMin,
+                            max: endThMax
+                        });
+                    }
 
-                if (ms < (paperMax * 0.4) && s.endTh >= endThPassMin && (!s.hasPr || s.endPr >= endPrPassMin)) {
-                    warnings.push({
-                        type: 'aggregate',
-                        subject: s.name,
-                        secured: Math.round(ms),
-                        min: Math.round(paperMax * 0.4),
-                        max: paperMax
-                    });
+                    if (s.hasPr && s.endPr < endPrPassMin) {
+                        warnings.push({
+                            type: 'practical',
+                            subject: s.name,
+                            secured: s.endPr,
+                            min: endPrPassMin,
+                            max: endPrMax
+                        });
+                    }
+
+                    if (ms < (paperMax * 0.4) && s.endTh >= endThPassMin && (!s.hasPr || s.endPr >= endPrPassMin)) {
+                        warnings.push({
+                            type: 'aggregate',
+                            subject: s.name,
+                            secured: Math.round(ms),
+                            min: Math.round(paperMax * 0.4),
+                            max: paperMax
+                        });
+                    }
                 }
             }
         });

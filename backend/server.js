@@ -65,6 +65,7 @@ const noteSchema = new mongoose.Schema({
   semester: { type: String, required: true }, // e.g. "1"
   title: { type: String, required: true },
   link: { type: String, required: true }, // Google Drive link
+  type: { type: String, enum: ["notes", "pyq"], default: "notes" }, // notes or previous-year-questions
   uploadedAt: { type: Date, default: Date.now },
 });
 
@@ -234,7 +235,11 @@ app.get("/api/admin/users", async (req, res) => {
 // ============================================================
 app.get("/api/notes", async (req, res) => {
   try {
-    const notes = await Note.find({}).sort({ uploadedAt: -1 });
+    const filter = {};
+    if (req.query.type === "notes" || req.query.type === "pyq") {
+      filter.type = req.query.type;
+    }
+    const notes = await Note.find(filter).sort({ uploadedAt: -1 });
     res.json(notes);
   } catch (err) {
     console.error("Get notes error:", err);
@@ -253,12 +258,20 @@ app.post("/api/notes", async (req, res) => {
       return res.status(403).json({ error: "Invalid admin key." });
     }
 
-    const { stream, dept, semester, title, link } = req.body;
+    const { stream, dept, semester, title, link, type } = req.body;
     if (!stream || !dept || !semester || !title || !link) {
       return res.status(400).json({ error: "All fields are required." });
     }
+    const resourceType = type === "pyq" ? "pyq" : "notes";
 
-    const note = await Note.create({ stream, dept, semester, title, link });
+    const note = await Note.create({
+      stream,
+      dept,
+      semester,
+      title,
+      link,
+      type: resourceType,
+    });
     return res.status(201).json(note);
   } catch (err) {
     console.error("Create note error:", err);

@@ -279,6 +279,23 @@ body.theme-dark .nav-tab.active {
     gap: 8px;
 }
 
+/* Calculator type switcher */
+.calculator-type-selector button {
+    transition: all var(--transition-fast) !important;
+    cursor: pointer;
+}
+.calculator-type-selector button.active {
+    background-color: #ffffff !important;
+    color: #059669 !important; /* Green primary color text */
+    border-color: #ffffff !important;
+    box-shadow: var(--shadow-sm);
+}
+body.theme-dark .calculator-type-selector button.active {
+    background-color: var(--accent) !important;
+    color: var(--primary-dark) !important;
+    border-color: var(--accent) !important;
+}
+
 /* ==========================================
    CONTENT AREA & CARDS
    ========================================== */
