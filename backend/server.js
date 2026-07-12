@@ -1,6 +1,6 @@
 // ============================================================
 // SGPA CALC — Backend Server
-// Handles: Register, Login, User Count, Admin User List
+// Handles: Register, Login, User Count, Reset Password, Admin User List
 // Storage: simple JSON file (backend/data/users.json)
 // ============================================================
 
@@ -128,6 +128,46 @@ app.get("/api/stats", (req, res) => {
   res.json({
     totalUsers: users.length,
     totalLogins,
+  });
+});
+
+// ============================================================
+// POST /api/reset-password
+// body: { name, email, newPassword }
+// Verifies identity by matching registered name + email, then
+// overwrites the stored password with a freshly hashed one.
+// ============================================================
+app.post("/api/reset-password", async (req, res) => {
+  const { email, name, newPassword } = req.body;
+
+  if (!email || !name || !newPassword) {
+    return res
+      .status(400)
+      .json({ error: "Email, registered name and new password are required." });
+  }
+
+  const users = readUsers();
+  const user = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+
+  if (!user) {
+    return res
+      .status(404)
+      .json({ error: "No account found with this email address." });
+  }
+
+  // Identity validation check: compare full names (case-insensitive, trimmed)
+  if (user.name.toLowerCase().trim() !== name.toLowerCase().trim()) {
+    return res
+      .status(400)
+      .json({ error: "Identity validation failed. Name does not match." });
+  }
+
+  user.password = await bcrypt.hash(newPassword, 10);
+  saveUsers(users);
+
+  return res.json({
+    message:
+      "Password reset successful. You can now log in with your new password.",
   });
 });
 
