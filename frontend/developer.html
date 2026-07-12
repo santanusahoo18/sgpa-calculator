@@ -338,7 +338,9 @@
             adminTable.style.display = "none";
 
             try {
-                const res = await fetch(ADMIN_API_URL + "/api/admin/users?key=" + encodeURIComponent(key));
+                const res = await fetch(ADMIN_API_URL + "/api/admin/users", {
+                    headers: { "x-admin-key": key }
+                });
                 const data = await res.json();
 
                 if (!res.ok) {
