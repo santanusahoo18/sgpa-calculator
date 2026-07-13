@@ -124,7 +124,7 @@ const NotesManager = {
       viewBtn.addEventListener("click", () => this.filterNotes());
     }
 
-    // Tab buttons: switch between Notes and PYQ
+    // Tab buttons: switch between Notes, PYQ, and Syllabus
     const tabButtons = document.querySelectorAll(".notes-tab-btn");
     tabButtons.forEach((btn) => {
       btn.addEventListener("click", async () => {
@@ -137,6 +137,16 @@ const NotesManager = {
         this.currentType = type;
         await this.loadNotes();
 
+        // Show/hide semester dropdown selector depending on if type is syllabus
+        const semGroup = document.getElementById("notes-sem-group");
+        if (semGroup) {
+          if (type === "syllabus") {
+            semGroup.style.display = "none";
+          } else {
+            semGroup.style.display = "block";
+          }
+        }
+
         // Re-show the "please select filters" prompt on tab switch
         const container = document.getElementById("notes-list-container");
         if (container) {
@@ -144,17 +154,112 @@ const NotesManager = {
             type === "pyq"
               ? "PYQs"
               : type === "syllabus"
-                ? "syllabus"
+                ? "Syllabus"
                 : "notes";
+          const requiredFieldsText = type === "syllabus" ? "Stream and Department" : "Stream, Department, and Semester";
           container.innerHTML = `
                         <div class="empty-state">
                             <i class="fa-solid fa-circle-info" style="font-size: 2rem; color: var(--accent); margin-bottom: 10px;"></i>
-                            <p style="font-weight: 600;">Please select Stream, Department, and Semester to view ${label}.</p>
+                            <p style="font-weight: 600;">Please select ${requiredFieldsText} to view ${label}.</p>
                         </div>
                     `;
         }
+
+        // Update the View button text
+        const viewBtn = document.getElementById("btn-view-notes");
+        if (viewBtn) {
+          const label =
+            type === "pyq"
+              ? "PYQs"
+              : type === "syllabus"
+                ? "Syllabus"
+                : "Notes";
+          viewBtn.innerHTML = `<i class="fa-solid fa-magnifying-glass"></i> View ${label}`;
+        }
       });
     });
+
+    // Type selection cards from notes wizard
+    const typeSelectBtns = document.querySelectorAll(".notes-type-select-btn");
+    typeSelectBtns.forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const type = btn.getAttribute("data-type");
+        if (!type) return;
+
+        // Sync tabs active class
+        const tabs = document.querySelectorAll(".notes-tab-btn");
+        tabs.forEach((tab) => {
+          if (tab.getAttribute("data-type") === type) {
+            tab.classList.add("active");
+          } else {
+            tab.classList.remove("active");
+          }
+        });
+
+        this.currentType = type;
+        await this.loadNotes();
+
+        // Show/hide semester dropdown selector depending on if type is syllabus
+        const semGroup = document.getElementById("notes-sem-group");
+        if (semGroup) {
+          if (type === "syllabus") {
+            semGroup.style.display = "none";
+          } else {
+            semGroup.style.display = "block";
+          }
+        }
+
+        // Re-show empty prompt
+        const container = document.getElementById("notes-list-container");
+        if (container) {
+          const label =
+            type === "pyq"
+              ? "PYQs"
+              : type === "syllabus"
+                ? "Syllabus"
+                : "notes";
+          const requiredFieldsText = type === "syllabus" ? "Stream and Department" : "Stream, Department, and Semester";
+          container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fa-solid fa-circle-info" style="font-size: 2rem; color: var(--accent); margin-bottom: 10px;"></i>
+                            <p style="font-weight: 600;">Please select ${requiredFieldsText} to view ${label}.</p>
+                        </div>
+                    `;
+        }
+
+        // Update view title and view button labels
+        const viewTitle = document.getElementById("notes-view-title");
+        if (viewTitle) {
+          viewTitle.textContent = type === "pyq" ? "PYQs" : (type === "syllabus" ? "Syllabus" : "Notes");
+        }
+
+        const viewBtn = document.getElementById("btn-view-notes");
+        if (viewBtn) {
+          const label =
+            type === "pyq"
+              ? "PYQs"
+              : type === "syllabus"
+                ? "Syllabus"
+                : "Notes";
+          viewBtn.innerHTML = `<i class="fa-solid fa-magnifying-glass"></i> View ${label}`;
+        }
+
+        // Switch wizard step views
+        document.getElementById("notes-flow-step-type").style.display = "none";
+        document.getElementById("notes-browse-view").style.display = "block";
+      });
+    });
+
+    // Back to resource categories listener
+    const backToCategoriesBtn = document.getElementById("back-to-notes-type-btn");
+    if (backToCategoriesBtn) {
+      backToCategoriesBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        document.getElementById("notes-browse-view").style.display = "none";
+        document.getElementById("notes-flow-step-type").style.display = "block";
+      });
+    }
   },
 
   updateDeptSelects() {
@@ -188,25 +293,30 @@ const NotesManager = {
       this.currentType === "pyq"
         ? "PYQs"
         : this.currentType === "syllabus"
-          ? "syllabus"
+          ? "Syllabus"
           : "notes";
 
     if (!container) return;
 
-    if (!stream || !dept || !sem) {
+    const isSyllabus = this.currentType === "syllabus";
+
+    if (!stream || !dept || (!isSyllabus && !sem)) {
+      const requiredFieldsText = isSyllabus ? "Stream and Department" : "Stream, Department, and Semester";
       container.innerHTML = `
                 <div class="empty-state">
                     <i class="fa-solid fa-circle-info" style="font-size: 2rem; color: var(--accent); margin-bottom: 10px;"></i>
-                    <p style="font-weight: 600;">Please select Stream, Department, and Semester to view ${label}.</p>
+                    <p style="font-weight: 600;">Please select ${requiredFieldsText} to view ${label}.</p>
                 </div>
             `;
       return;
     }
 
-    const filtered = this.notes.filter(
-      (note) =>
-        note.stream === stream && note.dept === dept && note.semester === sem,
-    );
+    const filtered = this.notes.filter((note) => {
+      if (isSyllabus) {
+        return note.stream === stream && note.dept === dept;
+      }
+      return note.stream === stream && note.dept === dept && note.semester === sem;
+    });
 
     container.innerHTML = "";
 
@@ -236,12 +346,13 @@ const NotesManager = {
           : this.currentType === "syllabus"
             ? "Open Syllabus"
             : "Open Notes";
+      const semLabel = note.semester === "all" ? "All Semesters" : `Semester ${note.semester}`;
       card.innerHTML = `
                 <div class="note-info">
                     <i class="fa-solid ${icon} note-icon"></i>
                     <div style="text-align: left;">
                         <h4 class="note-title">${note.title}</h4>
-                        <span class="note-meta">${note.dept.toUpperCase().replace("_", " ")} | Semester ${note.semester}</span>
+                        <span class="note-meta">${note.dept.toUpperCase().replace("_", " ")} | ${semLabel}</span>
                     </div>
                 </div>
                 <a href="${note.link}" target="_blank" class="btn btn-download-note">

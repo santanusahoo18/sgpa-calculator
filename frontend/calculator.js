@@ -215,20 +215,30 @@ const CalculatorController = {
             }
         }
         
+        // Parse calculator mode from URL query parameters (marks or grade)
+        const modeParam = urlParams.get('mode');
+        if (modeParam && ['marks', 'grade'].includes(modeParam)) {
+            state.calcMode = modeParam;
+        }
+        
         this.detectSyllabusAndLoad();
         this.loadSavedHistory();
     },
 
     loadTheme() {
-        const savedTheme = localStorage.getItem("theme") || "theme-light";
+        const savedTheme = localStorage.getItem("theme") || "theme-dark";
         document.body.className = savedTheme;
         const icon = document.querySelector('#theme-toggle-btn i');
         if (icon) {
-            if (savedTheme === 'theme-dark') {
-                icon.className = 'fa-solid fa-sun';
-            } else {
-                icon.className = 'fa-solid fa-moon';
-            }
+            const themeIcons = {
+                'theme-dark': { icon: 'fa-wand-magic-sparkles' },
+                'theme-light': { icon: 'fa-moon' },
+                'theme-slate': { icon: 'fa-circle-half-stroke' },
+                'theme-forest': { icon: 'fa-leaf' },
+                'theme-royal': { icon: 'fa-sun' }
+            };
+            const config = themeIcons[savedTheme] || themeIcons['theme-dark'];
+            icon.className = `fa-solid ${config.icon}`;
         }
     },
 
@@ -271,16 +281,26 @@ const CalculatorController = {
     bindEvents() {
         // Theme toggler
         document.getElementById('theme-toggle-btn').addEventListener('click', () => {
-            const body = document.body;
+            const themes = ['theme-dark', 'theme-light', 'theme-slate', 'theme-forest', 'theme-royal'];
+            const themeIcons = {
+                'theme-dark': { icon: 'fa-wand-magic-sparkles' },
+                'theme-light': { icon: 'fa-moon' },
+                'theme-slate': { icon: 'fa-circle-half-stroke' },
+                'theme-forest': { icon: 'fa-leaf' },
+                'theme-royal': { icon: 'fa-sun' }
+            };
+
+            let currentTheme = localStorage.getItem("theme") || "theme-dark";
+            if (!themes.includes(currentTheme)) currentTheme = 'theme-dark';
+            const nextIndex = (themes.indexOf(currentTheme) + 1) % themes.length;
+            const nextTheme = themes[nextIndex];
+            
+            localStorage.setItem("theme", nextTheme);
+            document.body.className = nextTheme;
             const icon = document.querySelector('#theme-toggle-btn i');
-            if (body.classList.contains('theme-light')) {
-                body.classList.replace('theme-light', 'theme-dark');
-                icon.classList.replace('fa-moon', 'fa-sun');
-                localStorage.setItem("theme", "theme-dark");
-            } else {
-                body.classList.replace('theme-dark', 'theme-light');
-                icon.classList.replace('fa-sun', 'fa-moon');
-                localStorage.setItem("theme", "theme-light");
+            if (icon) {
+                const config = themeIcons[nextTheme] || themeIcons['theme-dark'];
+                icon.className = `fa-solid ${config.icon}`;
             }
         });
 

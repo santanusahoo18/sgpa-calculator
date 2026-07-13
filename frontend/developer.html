@@ -23,10 +23,12 @@
             gap: 8px;
             color: var(--text-main);
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.95rem;
-            padding: 8px 16px;
+            padding: 8px 18px;
             background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
             box-shadow: var(--shadow-sm);
@@ -34,14 +36,14 @@
             margin-bottom: 20px;
         }
         .back-btn:hover {
-            color: var(--text-on-primary);
+            color: #ffffff;
             background: var(--primary);
             border-color: var(--primary);
-            transform: translateX(-3px);
+            transform: translateX(-4px);
             box-shadow: var(--shadow-md);
         }
         body.theme-dark .back-btn:hover {
-            color: var(--primary-dark);
+            color: var(--bg-app);
             background: var(--accent);
             border-color: var(--accent);
         }
@@ -167,11 +169,11 @@
         }
     </style>
 </head>
-<body class="theme-light">
+<body class="theme-dark">
     <!-- Theme & Session Resolution Script to prevent flash -->
     <script>
         (function() {
-            const savedTheme = localStorage.getItem("theme") || "theme-light";
+            const savedTheme = localStorage.getItem("theme") || "theme-dark";
             document.body.className = savedTheme;
 
             if (!localStorage.getItem("loggedInUser")) {
@@ -194,6 +196,7 @@
         <!-- Stream Menu Bar Switcher -->
         <nav class="stream-menu-bar">
             <a href="index.html" class="menu-item" id="menu-home"><i class="fa-solid fa-house"></i> <span>Home</span></a>
+            <a href="index.html?flow=collerp" class="menu-item" id="menu-collerp"><i class="fa-solid fa-building-columns"></i> <span>CollERP</span></a>
             <a href="developer.html" class="menu-item active" id="menu-developer"><i class="fa-solid fa-laptop-code"></i> <span>Developer</span></a>
         </nav>
         <div class="header-actions">
@@ -354,7 +357,7 @@
                             <option value="">Choose Stream First</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="dev-sem-group">
                         <label for="note-sem">Select Semester</label>
                         <select id="note-sem" required>
                             <option value="">Choose Semester</option>
@@ -403,33 +406,38 @@
         }
 
         // Initialize Theme Toggle State on page load
-        const initTheme = () => {
-            const savedTheme = localStorage.getItem("theme") || "theme-light";
-            document.body.className = savedTheme;
+        const themes = ['theme-dark', 'theme-light', 'theme-slate', 'theme-forest', 'theme-royal'];
+        const themeIcons = {
+            'theme-dark': { icon: 'fa-wand-magic-sparkles' },
+            'theme-light': { icon: 'fa-moon' },
+            'theme-slate': { icon: 'fa-circle-half-stroke' },
+            'theme-forest': { icon: 'fa-leaf' },
+            'theme-royal': { icon: 'fa-sun' }
+        };
+
+        const updateThemeUI = (themeName) => {
+            document.body.className = themeName;
             const icon = document.querySelector('#theme-toggle-btn i');
             if (icon) {
-                if (savedTheme === 'theme-dark') {
-                    icon.className = 'fa-solid fa-sun';
-                } else {
-                    icon.className = 'fa-solid fa-moon';
-                }
+                const config = themeIcons[themeName] || themeIcons['theme-dark'];
+                icon.className = `fa-solid ${config.icon}`;
             }
+        };
+
+        const initTheme = () => {
+            const savedTheme = localStorage.getItem("theme") || "theme-dark";
+            updateThemeUI(savedTheme);
         };
         initTheme();
 
         // Theme toggler
         document.getElementById('theme-toggle-btn').addEventListener('click', () => {
-            const body = document.body;
-            const icon = document.querySelector('#theme-toggle-btn i');
-            if (body.classList.contains('theme-light')) {
-                body.classList.replace('theme-light', 'theme-dark');
-                icon.classList.replace('fa-moon', 'fa-sun');
-                localStorage.setItem("theme", "theme-dark");
-            } else {
-                body.classList.replace('theme-dark', 'theme-light');
-                icon.classList.replace('fa-sun', 'fa-moon');
-                localStorage.setItem("theme", "theme-light");
-            }
+            let currentTheme = localStorage.getItem("theme") || "theme-dark";
+            if (!themes.includes(currentTheme)) currentTheme = 'theme-dark';
+            const nextIndex = (themes.indexOf(currentTheme) + 1) % themes.length;
+            const nextTheme = themes[nextIndex];
+            localStorage.setItem("theme", nextTheme);
+            updateThemeUI(nextTheme);
         });
 
         // Logout
@@ -627,12 +635,13 @@
                 notes.forEach((note) => {
                     const row = document.createElement("div");
                     const typeLabel = note.type === "pyq" ? "PYQ" : (note.type === "syllabus" ? "Syllabus" : "Notes");
+                    const semLabel = note.semester === "all" ? "All Semesters" : "Sem " + note.semester;
                     row.style.cssText = "display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border-color);";
                     row.innerHTML =
                         '<div style="font-size:0.85rem;">' +
                             '<span style="display:inline-block; font-size:0.7rem; font-weight:700; padding:2px 8px; border-radius:10px; background:var(--accent); color:var(--primary-dark); margin-bottom:4px;">' + typeLabel + '</span><br>' +
                             '<strong>' + note.title + '</strong><br>' +
-                            '<span class="muted" style="color:var(--text-muted);">' + note.stream + ' / ' + note.dept + ' / Sem ' + note.semester + '</span>' +
+                            '<span class="muted" style="color:var(--text-muted);">' + note.stream + ' / ' + note.dept + ' / ' + semLabel + '</span>' +
                         '</div>' +
                         '<button class="btn btn-secondary btn-sm note-delete-btn" data-id="' + note._id + '" title="Delete note"><i class="fa-solid fa-trash"></i></button>';
                     adminNotesList.appendChild(row);
@@ -662,17 +671,35 @@
             }
         }
 
+        // Toggle semester dropdown for syllabus category
+        const noteTypeSelect = document.getElementById("note-type");
+        const devSemGroup = document.getElementById("dev-sem-group");
+        const noteSemSelect = document.getElementById("note-sem");
+
+        if (noteTypeSelect && devSemGroup && noteSemSelect) {
+            noteTypeSelect.addEventListener("change", () => {
+                if (noteTypeSelect.value === "syllabus") {
+                    devSemGroup.style.display = "none";
+                    noteSemSelect.removeAttribute("required");
+                } else {
+                    devSemGroup.style.display = "block";
+                    noteSemSelect.setAttribute("required", "");
+                }
+            });
+        }
+
         noteForm.addEventListener("submit", async function (e) {
             e.preventDefault();
             noteFormMsg.style.display = "none";
 
+            const type = document.getElementById("note-type").value;
             const payload = {
                 stream: document.getElementById("note-stream").value,
                 dept: document.getElementById("note-dept").value,
-                semester: document.getElementById("note-sem").value,
+                semester: type === "syllabus" ? "all" : document.getElementById("note-sem").value,
                 title: document.getElementById("note-title").value.trim(),
                 link: document.getElementById("note-link").value.trim(),
-                type: document.getElementById("note-type").value
+                type: type
             };
 
             try {

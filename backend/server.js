@@ -264,15 +264,17 @@ app.post("/api/notes", async (req, res) => {
     }
 
     const { stream, dept, semester, title, link, type } = req.body;
-    if (!stream || !dept || !semester || !title || !link) {
+    const resourceType = type === "pyq" || type === "syllabus" ? type : "notes";
+    const finalSemester = resourceType === "syllabus" ? "all" : semester;
+
+    if (!stream || !dept || !finalSemester || !title || !link) {
       return res.status(400).json({ error: "All fields are required." });
     }
-    const resourceType = type === "pyq" || type === "syllabus" ? type : "notes";
 
     const note = await Note.create({
       stream,
       dept,
-      semester,
+      semester: finalSemester,
       title,
       link,
       type: resourceType,

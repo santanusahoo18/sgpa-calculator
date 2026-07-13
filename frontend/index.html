@@ -43,10 +43,12 @@
         }
         .stream-card {
             background-color: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border-radius: var(--radius-lg);
             padding: 40px 30px;
             border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--shadow-sm);
             transition: all var(--transition-normal);
             text-decoration: none;
             color: var(--text-main);
@@ -66,15 +68,27 @@
             background: var(--primary);
             transition: all var(--transition-fast);
         }
-        .stream-card.arts-card::before { background: #3B82F6; }
-        .stream-card.science-card::before { background: #10B981; }
-        .stream-card.commerce-card::before { background: #F59E0B; }
+        .stream-card.arts-card::before { background: #3b82f6; }
+        .stream-card.science-card::before { background: #10b981; }
+        .stream-card.commerce-card::before { background: #f59e0b; }
 
         .stream-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-8px) scale(1.02);
             box-shadow: var(--shadow-lg);
-            border-color: var(--accent);
         }
+        .stream-card.arts-card:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.15), 0 10px 10px -5px rgba(59, 130, 246, 0.05);
+        }
+        .stream-card.science-card:hover {
+            border-color: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 20px 25px -5px rgba(16, 185, 129, 0.15), 0 10px 10px -5px rgba(16, 185, 129, 0.05);
+        }
+        .stream-card.commerce-card:hover {
+            border-color: rgba(245, 158, 11, 0.4);
+            box-shadow: 0 20px 25px -5px rgba(245, 158, 11, 0.15), 0 10px 10px -5px rgba(245, 158, 11, 0.05);
+        }
+
         .stream-icon {
             width: 80px;
             height: 80px;
@@ -82,14 +96,15 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             margin-bottom: 25px;
             background-color: var(--bg-app);
             transition: all var(--transition-fast);
+            border: 1px solid var(--border-color);
         }
-        .arts-card .stream-icon { color: #3B82F6; }
-        .science-card .stream-icon { color: #10B981; }
-        .commerce-card .stream-icon { color: #F59E0B; }
+        .arts-card .stream-icon { color: #3b82f6; }
+        .science-card .stream-icon { color: #10b981; }
+        .commerce-card .stream-icon { color: #f59e0b; }
 
         .stream-card:hover .stream-icon {
             transform: scale(1.1);
@@ -98,7 +113,8 @@
             font-family: 'Outfit', sans-serif;
             font-size: 1.6rem;
             margin-bottom: 12px;
-            font-weight: 700;
+            font-weight: 800;
+            letter-spacing: -0.5px;
         }
         .stream-card p {
             font-size: 0.95rem;
@@ -114,6 +130,8 @@
         }
         .sem-select-btn {
             background-color: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border-radius: var(--radius-lg);
             padding: 30px 20px;
             border: 1px solid var(--border-color);
@@ -128,9 +146,13 @@
             box-shadow: var(--shadow-sm);
         }
         .sem-select-btn:hover {
-            transform: translateY(-5px);
+            transform: translateY(-5px) scale(1.03);
             box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+        body.theme-dark .sem-select-btn:hover {
             border-color: var(--accent);
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.15);
         }
         .sem-select-btn span:first-child {
             font-family: 'Outfit', sans-serif;
@@ -431,11 +453,11 @@
     </style>
 
 </head>
-<body class="theme-light">
+<body class="theme-dark">
     <!-- Theme & Session Resolution Script to prevent flash -->
     <script>
         (function() {
-            const savedTheme = localStorage.getItem("theme") || "theme-light";
+            const savedTheme = localStorage.getItem("theme") || "theme-dark";
             document.body.className = savedTheme;
 
             if (!localStorage.getItem("loggedInUser")) {
@@ -458,6 +480,7 @@
         <!-- Stream Menu Bar Switcher -->
         <nav class="stream-menu-bar">
             <a href="index.html" class="menu-item active" id="menu-home"><i class="fa-solid fa-house"></i> <span>Home</span></a>
+            <a href="#" class="menu-item" id="menu-collerp"><i class="fa-solid fa-building-columns"></i> <span>CollERP</span></a>
             <a href="developer.html" class="menu-item" id="menu-developer"><i class="fa-solid fa-laptop-code"></i> <span>Developer</span></a>
         </nav>
         <div class="header-actions">
@@ -511,8 +534,34 @@
 
         <!-- CGPA Flow Section (hidden by default) -->
         <div id="cgpa-flow-section" style="display: none;">
+            <!-- Step 0: Choose Method -->
+            <div id="flow-step-method" style="display: none;">
+                <a href="#" class="back-btn back-to-main-btn"><i class="fa-solid fa-arrow-left"></i> Back to Main Menu</a>
+                <div class="portal-header">
+                    <h2>Select Calculator Method</h2>
+                    <p>Choose whether to calculate using subject marks or directly using grades</p>
+                </div>
+                <div class="stream-grid">
+                    <a href="#" class="stream-card arts-card method-select-btn" data-method="marks">
+                        <div class="stream-icon" style="color: #3b82f6;">
+                            <i class="fa-solid fa-square-poll-vertical"></i>
+                        </div>
+                        <h3>Enter Marks</h3>
+                        <p>Calculate your SGPA by entering internal/external exam marks.</p>
+                    </a>
+                    <a href="#" class="stream-card science-card method-select-btn" data-method="grade">
+                        <div class="stream-icon" style="color: #10b981;">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                        <h3>Enter Grades</h3>
+                        <p>Calculate your SGPA directly by choosing letter grades (O, A, B, etc.).</p>
+                    </a>
+                </div>
+            </div>
+
             <!-- Step 1: Choose Stream -->
-            <div id="flow-step-stream">
+            <div id="flow-step-stream" style="display: none;">
+                <a href="#" id="back-to-method-btn" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Calculator Mode</a>
                 <div class="portal-header">
                     <h2>Choose Your Stream</h2>
                     <p>Select your academic stream for the calculator</p>
@@ -540,11 +589,11 @@
                         <p>BCom Honors calculators with accounting and business profiles.</p>
                     </a>
                 </div>
-                <button class="btn btn-secondary back-to-main-btn" style="margin-top: 30px; padding: 10px 24px; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main);"><i class="fa-solid fa-arrow-left"></i> Back to Main Menu</button>
             </div>
 
             <!-- Step 2: Choose Semester -->
             <div id="flow-step-semester" style="display: none;">
+                <a href="#" id="back-to-streams-btn" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Streams</a>
                 <div class="portal-header">
                     <h2>Select Semester</h2>
                     <p>Choose the semester you wish to calculate for</p>
@@ -575,23 +624,54 @@
                         <span style="font-size: 0.8rem; font-weight: 500; color: var(--text-muted);">CBCS</span>
                     </a>
                 </div>
-                <div style="margin-top: 30px; display: flex; justify-content: center; gap: 15px;">
-                    <button id="back-to-streams-btn" class="btn btn-secondary" style="padding: 10px 24px; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main);"><i class="fa-solid fa-arrow-left"></i> Back to Streams</button>
-                </div>
             </div>
         </div>
 
         <!-- Notes Section (hidden by default) -->
         <div id="notes-section" style="display: none; max-width: 800px; margin: 0 auto;">
-            <div class="portal-header" style="text-align: center;">
-                <h2>Notes & Study Material</h2>
-                <p>Access stream-specific study guides, handwritten notes, and resources.</p>
+            
+            <!-- Step 1: Choose Resource Type -->
+            <div id="notes-flow-step-type" style="display: block;">
+                <a href="#" class="back-btn back-to-main-btn"><i class="fa-solid fa-arrow-left"></i> Back to Main Menu</a>
+                <div class="portal-header" style="text-align: center;">
+                    <h2>Notes & Study Material</h2>
+                    <p>Select the type of academic resource you want to access</p>
+                </div>
+                <div class="stream-grid">
+                    <a href="#" class="stream-card arts-card notes-type-select-btn" data-type="notes">
+                        <div class="stream-icon" style="color: #3b82f6;">
+                            <i class="fa-solid fa-book"></i>
+                        </div>
+                        <h3>Notes</h3>
+                        <p>Stream-specific study guides, lecture notes, and reference books.</p>
+                    </a>
+                    <a href="#" class="stream-card science-card notes-type-select-btn" data-type="pyq">
+                        <div class="stream-icon" style="color: #10b981;">
+                            <i class="fa-solid fa-file-circle-question"></i>
+                        </div>
+                        <h3>PYQs</h3>
+                        <p>Previous Year Question papers to prepare for exams.</p>
+                    </a>
+                    <a href="#" class="stream-card commerce-card notes-type-select-btn" data-type="syllabus">
+                        <div class="stream-icon" style="color: #f59e0b;">
+                            <i class="fa-solid fa-scroll"></i>
+                        </div>
+                        <h3>Syllabus</h3>
+                        <p>Department-wide official syllabus outlines and regulations.</p>
+                    </a>
+                </div>
             </div>
 
-            <!-- Browse Notes View -->
-            <div id="notes-browse-view" style="display: block;">
-                <!-- Notes / PYQ / Syllabus Tabs -->
-                <div class="notes-tabs">
+            <!-- Browse Notes View (hidden by default) -->
+            <div id="notes-browse-view" style="display: none;">
+                <a href="#" id="back-to-notes-type-btn" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Resource Categories</a>
+                <div class="portal-header" style="text-align: center;">
+                    <h2>Browse <span id="notes-view-title">Notes</span></h2>
+                    <p>Select your filters below to retrieve academic resources</p>
+                </div>
+
+                <!-- Notes / PYQ / Syllabus Tabs (Hidden and handled via categories selection step) -->
+                <div class="notes-tabs" style="display: none;">
                     <button type="button" class="notes-tab-btn active" data-type="notes">
                         <i class="fa-solid fa-book"></i> Notes
                     </button>
@@ -620,7 +700,7 @@
                             <option value="">Choose Department</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="notes-sem-group">
                         <label for="notes-sem-select">Select Semester</label>
                         <select id="notes-sem-select">
                             <option value="">Choose Semester</option>
@@ -645,10 +725,24 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Footer Return Buttons -->
-            <div style="margin-top: 30px; text-align: center; margin-bottom: 40px;">
-                <button class="btn back-to-main-btn" style="padding: 12px 30px; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; border: none; background: var(--primary); color: var(--text-on-primary); transition: all var(--transition-fast);"><i class="fa-solid fa-arrow-left"></i> Back to Main Menu</button>
+        <!-- ERP Section (hidden by default) -->
+        <div id="erp-section" style="display: none; max-width: 800px; margin: 0 auto;">
+            <a href="#" class="back-btn back-to-main-btn"><i class="fa-solid fa-arrow-left"></i> Back to Main Menu</a>
+            <div class="portal-header" style="text-align: center;">
+                <h2>College Student ERP</h2>
+                <p>Access your college portal to check attendance, results, and fees</p>
+            </div>
+            
+            <div class="stream-grid" style="display: flex; justify-content: center; gap: 20px;">
+                <a href="https://www.dinakrushnacollege.org.in/edmin/StuLogin.php" target="_blank" class="stream-card arts-card" style="max-width: 360px; text-decoration: none;">
+                    <div class="stream-icon" style="color: #10b981;">
+                        <i class="fa-solid fa-school"></i>
+                    </div>
+                    <h3>DK College, Jaleswar</h3>
+                    <p>Access official student records, notifications, and examination portal.</p>
+                </a>
             </div>
         </div>
     </div>
@@ -672,33 +766,38 @@
         }
 
         // Initialize Theme Toggle State on page load
-        const initTheme = () => {
-            const savedTheme = localStorage.getItem("theme") || "theme-light";
-            document.body.className = savedTheme;
+        const themes = ['theme-dark', 'theme-light', 'theme-slate', 'theme-forest', 'theme-royal'];
+        const themeIcons = {
+            'theme-dark': { icon: 'fa-wand-magic-sparkles' },
+            'theme-light': { icon: 'fa-moon' },
+            'theme-slate': { icon: 'fa-circle-half-stroke' },
+            'theme-forest': { icon: 'fa-leaf' },
+            'theme-royal': { icon: 'fa-sun' }
+        };
+
+        const updateThemeUI = (themeName) => {
+            document.body.className = themeName;
             const icon = document.querySelector('#theme-toggle-btn i');
             if (icon) {
-                if (savedTheme === 'theme-dark') {
-                    icon.className = 'fa-solid fa-sun';
-                } else {
-                    icon.className = 'fa-solid fa-moon';
-                }
+                const config = themeIcons[themeName] || themeIcons['theme-dark'];
+                icon.className = `fa-solid ${config.icon}`;
             }
+        };
+
+        const initTheme = () => {
+            const savedTheme = localStorage.getItem("theme") || "theme-dark";
+            updateThemeUI(savedTheme);
         };
         initTheme();
 
         // Theme toggler
         document.getElementById('theme-toggle-btn').addEventListener('click', () => {
-            const body = document.body;
-            const icon = document.querySelector('#theme-toggle-btn i');
-            if (body.classList.contains('theme-light')) {
-                body.classList.replace('theme-light', 'theme-dark');
-                icon.classList.replace('fa-moon', 'fa-sun');
-                localStorage.setItem("theme", "theme-dark");
-            } else {
-                body.classList.replace('theme-dark', 'theme-light');
-                icon.classList.replace('fa-sun', 'fa-moon');
-                localStorage.setItem("theme", "theme-light");
-            }
+            let currentTheme = localStorage.getItem("theme") || "theme-dark";
+            if (!themes.includes(currentTheme)) currentTheme = 'theme-dark';
+            const nextIndex = (themes.indexOf(currentTheme) + 1) % themes.length;
+            const nextTheme = themes[nextIndex];
+            localStorage.setItem("theme", nextTheme);
+            updateThemeUI(nextTheme);
         });
 
         // Logout
@@ -709,12 +808,36 @@
             window.location.href = "index.html";
         });
 
+        // Menu item click listeners
+        document.getElementById("menu-home").addEventListener("click", (e) => {
+            e.preventDefault();
+            notesSection.style.display = "none";
+            cgpaFlowSection.style.display = "none";
+            document.getElementById("erp-section").style.display = "none";
+            mainOptionsSection.style.display = "block";
+            document.querySelectorAll(".stream-menu-bar .menu-item").forEach(item => item.classList.remove("active"));
+            document.getElementById("menu-home").classList.add("active");
+            window.history.pushState({}, document.title, window.location.pathname);
+        });
+
+        document.getElementById("menu-collerp").addEventListener("click", (e) => {
+            e.preventDefault();
+            mainOptionsSection.style.display = "none";
+            cgpaFlowSection.style.display = "none";
+            notesSection.style.display = "none";
+            document.getElementById("erp-section").style.display = "block";
+            document.querySelectorAll(".stream-menu-bar .menu-item").forEach(item => item.classList.remove("active"));
+            document.getElementById("menu-collerp").classList.add("active");
+        });
+
         // State variables for wizard
         let selectedStream = '';
+        let selectedMethod = '';
 
         const mainOptionsSection = document.getElementById("main-options-section");
         const cgpaFlowSection = document.getElementById("cgpa-flow-section");
         const notesSection = document.getElementById("notes-section");
+        const flowStepMethod = document.getElementById("flow-step-method");
         const flowStepStream = document.getElementById("flow-step-stream");
         const flowStepSemester = document.getElementById("flow-step-semester");
 
@@ -724,6 +847,10 @@
             mainOptionsSection.style.display = "none";
             cgpaFlowSection.style.display = "none";
             notesSection.style.display = "block";
+            const flowType = document.getElementById("notes-flow-step-type");
+            const browseView = document.getElementById("notes-browse-view");
+            if (flowType) flowType.style.display = "block";
+            if (browseView) browseView.style.display = "none";
         });
 
         document.getElementById("cgpa-calc-card").addEventListener("click", (e) => {
@@ -731,8 +858,26 @@
             mainOptionsSection.style.display = "none";
             notesSection.style.display = "none";
             cgpaFlowSection.style.display = "block";
-            flowStepStream.style.display = "block";
+            flowStepMethod.style.display = "block";
+            flowStepStream.style.display = "none";
             flowStepSemester.style.display = "none";
+        });
+
+        // Method select listeners
+        document.querySelectorAll(".method-select-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                selectedMethod = btn.getAttribute("data-method");
+                flowStepMethod.style.display = "none";
+                flowStepStream.style.display = "block";
+            });
+        });
+
+        // Back to methods listener
+        document.getElementById("back-to-method-btn").addEventListener("click", (e) => {
+            e.preventDefault();
+            flowStepStream.style.display = "none";
+            flowStepMethod.style.display = "block";
         });
 
         // Back to main menu listeners
@@ -741,7 +886,13 @@
                 e.preventDefault();
                 notesSection.style.display = "none";
                 cgpaFlowSection.style.display = "none";
+                const erpSection = document.getElementById("erp-section");
+                if (erpSection) erpSection.style.display = "none";
                 mainOptionsSection.style.display = "block";
+                document.querySelectorAll(".stream-menu-bar .menu-item").forEach(item => item.classList.remove("active"));
+                const homeMenu = document.getElementById("menu-home");
+                if (homeMenu) homeMenu.classList.add("active");
+                window.history.pushState({}, document.title, window.location.pathname || "/");
             });
         });
 
@@ -767,8 +918,8 @@
             btn.addEventListener("click", (e) => {
                 e.preventDefault();
                 const sem = btn.getAttribute("data-sem");
-                if (selectedStream) {
-                    window.location.href = `${selectedStream}.html?semester=${sem}`;
+                if (selectedStream && selectedMethod) {
+                    window.location.href = `${selectedStream}.html?semester=${sem}&mode=${selectedMethod}`;
                 }
             });
         });
@@ -778,9 +929,21 @@
         if (urlParams.get("flow") === "calculator") {
             mainOptionsSection.style.display = "none";
             notesSection.style.display = "none";
+            const erpSection = document.getElementById("erp-section");
+            if (erpSection) erpSection.style.display = "none";
             cgpaFlowSection.style.display = "block";
-            flowStepStream.style.display = "block";
+            flowStepMethod.style.display = "block";
+            flowStepStream.style.display = "none";
             flowStepSemester.style.display = "none";
+        } else if (urlParams.get("flow") === "collerp") {
+            mainOptionsSection.style.display = "none";
+            notesSection.style.display = "none";
+            cgpaFlowSection.style.display = "none";
+            const erpSection = document.getElementById("erp-section");
+            if (erpSection) erpSection.style.display = "block";
+            document.querySelectorAll(".stream-menu-bar .menu-item").forEach(item => item.classList.remove("active"));
+            const collErpMenu = document.getElementById("menu-collerp");
+            if (collErpMenu) collErpMenu.classList.add("active");
         }
     </script>
     <script src="notes.js"></script>
