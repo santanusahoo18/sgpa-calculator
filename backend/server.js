@@ -65,7 +65,7 @@ const noteSchema = new mongoose.Schema({
   semester: { type: String, required: true }, // e.g. "1"
   title: { type: String, required: true },
   link: { type: String, required: true }, // Google Drive link
-  type: { type: String, enum: ["notes", "pyq"], default: "notes" }, // notes or previous-year-questions
+  type: { type: String, enum: ["notes", "pyq", "syllabus"], default: "notes" }, // notes, previous-year-questions, or syllabus
   uploadedAt: { type: Date, default: Date.now },
 });
 
@@ -232,11 +232,16 @@ app.get("/api/admin/users", async (req, res) => {
 // ============================================================
 // GET /api/notes
 // Public — returns all notes so any user's browser/device can see them.
+// Optional query: ?type=notes | ?type=pyq | ?type=syllabus
 // ============================================================
 app.get("/api/notes", async (req, res) => {
   try {
     const filter = {};
-    if (req.query.type === "notes" || req.query.type === "pyq") {
+    if (
+      req.query.type === "notes" ||
+      req.query.type === "pyq" ||
+      req.query.type === "syllabus"
+    ) {
       filter.type = req.query.type;
     }
     const notes = await Note.find(filter).sort({ uploadedAt: -1 });
@@ -250,7 +255,7 @@ app.get("/api/notes", async (req, res) => {
 // ============================================================
 // POST /api/notes
 // Header: x-admin-key: ADMIN_KEY
-// body: { stream, dept, semester, title, link }
+// body: { stream, dept, semester, title, link, type }
 // ============================================================
 app.post("/api/notes", async (req, res) => {
   try {
@@ -262,7 +267,7 @@ app.post("/api/notes", async (req, res) => {
     if (!stream || !dept || !semester || !title || !link) {
       return res.status(400).json({ error: "All fields are required." });
     }
-    const resourceType = type === "pyq" ? "pyq" : "notes";
+    const resourceType = type === "pyq" || type === "syllabus" ? type : "notes";
 
     const note = await Note.create({
       stream,

@@ -140,7 +140,12 @@ const NotesManager = {
         // Re-show the "please select filters" prompt on tab switch
         const container = document.getElementById("notes-list-container");
         if (container) {
-          const label = type === "pyq" ? "PYQs" : "notes";
+          const label =
+            type === "pyq"
+              ? "PYQs"
+              : type === "syllabus"
+                ? "syllabus"
+                : "notes";
           container.innerHTML = `
                         <div class="empty-state">
                             <i class="fa-solid fa-circle-info" style="font-size: 2rem; color: var(--accent); margin-bottom: 10px;"></i>
@@ -179,7 +184,12 @@ const NotesManager = {
     const dept = document.getElementById("notes-dept-select").value;
     const sem = document.getElementById("notes-sem-select").value;
     const container = document.getElementById("notes-list-container");
-    const label = this.currentType === "pyq" ? "PYQs" : "notes";
+    const label =
+      this.currentType === "pyq"
+        ? "PYQs"
+        : this.currentType === "syllabus"
+          ? "syllabus"
+          : "notes";
 
     if (!container) return;
 
@@ -215,8 +225,17 @@ const NotesManager = {
       const card = document.createElement("div");
       card.className = "note-item-card";
       const icon =
-        this.currentType === "pyq" ? "fa-file-circle-question" : "fa-file-pdf";
-      const btnLabel = this.currentType === "pyq" ? "Open PYQ" : "Open Notes";
+        this.currentType === "pyq"
+          ? "fa-file-circle-question"
+          : this.currentType === "syllabus"
+            ? "fa-scroll"
+            : "fa-file-pdf";
+      const btnLabel =
+        this.currentType === "pyq"
+          ? "Open PYQ"
+          : this.currentType === "syllabus"
+            ? "Open Syllabus"
+            : "Open Notes";
       card.innerHTML = `
                 <div class="note-info">
                     <i class="fa-solid ${icon} note-icon"></i>

@@ -185,6 +185,7 @@
             margin-bottom: 25px;
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 12px;
+            flex-wrap: wrap;
         }
         .notes-tab-btn {
             background: none;
@@ -589,13 +590,16 @@
 
             <!-- Browse Notes View -->
             <div id="notes-browse-view" style="display: block;">
-                <!-- Notes / PYQ Tabs -->
+                <!-- Notes / PYQ / Syllabus Tabs -->
                 <div class="notes-tabs">
                     <button type="button" class="notes-tab-btn active" data-type="notes">
                         <i class="fa-solid fa-book"></i> Notes
                     </button>
                     <button type="button" class="notes-tab-btn" data-type="pyq">
                         <i class="fa-solid fa-file-circle-question"></i> PYQs
+                    </button>
+                    <button type="button" class="notes-tab-btn" data-type="syllabus">
+                        <i class="fa-solid fa-scroll"></i> Syllabus
                     </button>
                 </div>
 
