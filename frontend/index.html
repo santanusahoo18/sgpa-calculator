@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stream Selection Portal - FMU SGPA Calculator</title>
     <link rel="stylesheet" href="style.css">
+
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0d1117">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -947,5 +951,11 @@
         }
     </script>
     <script src="notes.js"></script>
+
+    <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
+  }
+</script>
 </body>
 </html>
