@@ -12,11 +12,53 @@ const templates = {
                 { name: 'CORE-I (MAJOR) ECO-II', cr: 4, hasPr: false },
                 { name: 'CORE-II (MINOR) - Paper I', cr: 4, hasPr: false },
                 { name: 'MDC-I (Multi-Disciplinary)', cr: 3, hasPr: false },
-                { name: 'AEC-I (MIL-Odia)', cr: 4, hasPr: false }
+                { name: 'AEC-I (Language/MIL)', cr: 4, hasPr: false }
             ],
             education: [
                 { name: 'CORE-I (MAJOR) EDU-I', cr: 4, hasPr: true },
                 { name: 'CORE-I (MAJOR) EDU-II', cr: 4, hasPr: true },
+                { name: 'CORE-II (MINOR) - Paper I', cr: 4, hasPr: false },
+                { name: 'MDC-I (Multi-Disciplinary)', cr: 3, hasPr: false },
+                { name: 'AEC-I (Language/MIL)', cr: 4, hasPr: false }
+            ],
+            english: [
+                { name: 'CORE-I (MAJOR) ENG-I', cr: 4, hasPr: false },
+                { name: 'CORE-I (MAJOR) ENG-II', cr: 4, hasPr: false },
+                { name: 'CORE-II (MINOR) - Paper I', cr: 4, hasPr: false },
+                { name: 'MDC-I (Multi-Disciplinary)', cr: 3, hasPr: false },
+                { name: 'AEC-I (Language/MIL)', cr: 4, hasPr: false }
+            ],
+            history: [
+                { name: 'CORE-I (MAJOR) HIST-I', cr: 4, hasPr: false },
+                { name: 'CORE-I (MAJOR) HIST-II', cr: 4, hasPr: false },
+                { name: 'CORE-II (MINOR) - Paper I', cr: 4, hasPr: false },
+                { name: 'MDC-I (Multi-Disciplinary)', cr: 3, hasPr: false },
+                { name: 'AEC-I (Language/MIL)', cr: 4, hasPr: false }
+            ],
+            odia: [
+                { name: 'CORE-I (MAJOR) ODI-I', cr: 4, hasPr: false },
+                { name: 'CORE-I (MAJOR) ODI-II', cr: 4, hasPr: false },
+                { name: 'CORE-II (MINOR) - Paper I', cr: 4, hasPr: false },
+                { name: 'MDC-I (Multi-Disciplinary)', cr: 3, hasPr: false },
+                { name: 'AEC-I (Language/MIL)', cr: 4, hasPr: false }
+            ],
+            philosophy: [
+                { name: 'CORE-I (MAJOR) PHIL-I', cr: 4, hasPr: false },
+                { name: 'CORE-I (MAJOR) PHIL-II', cr: 4, hasPr: false },
+                { name: 'CORE-II (MINOR) - Paper I', cr: 4, hasPr: false },
+                { name: 'MDC-I (Multi-Disciplinary)', cr: 3, hasPr: false },
+                { name: 'AEC-I (Language/MIL)', cr: 4, hasPr: false }
+            ],
+            political_science: [
+                { name: 'CORE-I (MAJOR) PSC-I', cr: 4, hasPr: false },
+                { name: 'CORE-I (MAJOR) PSC-II', cr: 4, hasPr: false },
+                { name: 'CORE-II (MINOR) - Paper I', cr: 4, hasPr: false },
+                { name: 'MDC-I (Multi-Disciplinary)', cr: 3, hasPr: false },
+                { name: 'AEC-I (Language/MIL)', cr: 4, hasPr: false }
+            ],
+            sanskrit: [
+                { name: 'CORE-I (MAJOR) SAN-I', cr: 4, hasPr: false },
+                { name: 'CORE-I (MAJOR) SAN-II', cr: 4, hasPr: false },
                 { name: 'CORE-II (MINOR) - Paper I', cr: 4, hasPr: false },
                 { name: 'MDC-I (Multi-Disciplinary)', cr: 3, hasPr: false },
                 { name: 'AEC-I (Language/MIL)', cr: 4, hasPr: false }
@@ -180,7 +222,7 @@ const templates = {
                 { name: 'AECC-EV (Ethics & Values)', cr: 1, hasPr: false },
                 { name: 'SEC-2', cr: 4, hasPr: false },
                 { name: 'CORE-8', cr: 6, hasPr: false },
-                { name: 'CORE-9', cr: 6, hasPr: false },
+                { name: 'CORE-9', cr: 6, hasPr: true },
                 { name: 'CORE-10', cr: 6, hasPr: false },
                 { name: 'GE-B2', cr: 6, hasPr: false }
             ]
@@ -435,7 +477,7 @@ const CalculatorController = {
         
         let deptKey = 'general';
         if (state.stream === 'arts') {
-            deptKey = (dept === 'economics' || dept === 'education') ? dept : 'general';
+            deptKey = templates[mode][state.stream][dept] ? dept : 'general';
         } else if (state.stream === 'science') {
             deptKey = templates[mode][state.stream][dept] ? dept : 'general';
         }
@@ -446,21 +488,64 @@ const CalculatorController = {
         if (mode === 'nep') {
             if (semester === 1) {
                 // Keep default templates
+                if (state.stream === 'science') {
+                    list.push({ name: 'VAC-I (EVS & DM)', cr: 3, hasPr: false });
+                }
             } else if (semester === 2) {
                 list = list.map(s => {
-                    let name = s.name.replace('-I', '-III').replace('-II', '-IV').replace('Paper I', 'Paper III').replace('Paper II', 'Paper IV').replace('MINOR - Paper I', 'MINOR - Paper II');
-                    if (name.includes('AEC-I')) name = 'AEC-II (MIL-CE)';
-                    if (name.includes('MDC-I')) name = 'MDC-II';
-                    return { ...s, name };
+                    let name = s.name;
+                    let cr = s.cr;
+                    if (name.includes('CORE-I (MAJOR)')) {
+                        if (name.endsWith('-I')) {
+                            name = name.slice(0, -2) + '-III';
+                        } else if (name.endsWith('-II')) {
+                            name = name.slice(0, -3) + '-IV';
+                        } else if (name.endsWith('Paper I')) {
+                            name = name.replace('Paper I', 'Paper III');
+                        } else if (name.endsWith('Paper II')) {
+                            name = name.replace('Paper II', 'Paper IV');
+                        }
+                    } else if (name.includes('CORE-II (MINOR)')) {
+                        name = name.replace('CORE-II (MINOR) - Paper I', 'CORE-III (MINOR) - Paper I');
+                    } else if (name.includes('MDC-I')) {
+                        name = 'MDC-II';
+                        cr = 3;
+                    } else if (name.includes('AEC-I')) {
+                        name = 'AEC-II (MIL/CE)';
+                        cr = 4;
+                    }
+                    return { ...s, name, cr };
                 });
-                list.push({ name: 'SEC-II (Skill Course)', cr: 3, hasPr: false });
-                list.push({ name: 'VAC-II (Ethics & Values)', cr: 3, hasPr: false });
+                if (state.stream === 'science') {
+                    list.push({ name: 'SEC-I (Skill Course)', cr: 3, hasPr: false });
+                } else {
+                    list.push({ name: 'SEC-I (Skill Course)', cr: 3, hasPr: false });
+                    list.push({ name: 'VAC-I (EVS & DM)', cr: 3, hasPr: false });
+                }
             } else if (semester === 3) {
                 list = list.map(s => {
-                    let name = s.name.replace('-I', '-V').replace('-II', '-VI').replace('Paper I', 'Paper V').replace('Paper II', 'Paper VI');
-                    if (name.includes('MDC-I')) name = 'MDC-III';
-                    if (name.includes('AEC-I')) name = 'VAC-II (Ethics & Values)';
-                    return { ...s, name };
+                    let name = s.name;
+                    let cr = s.cr;
+                    if (name.includes('CORE-I (MAJOR)')) {
+                        if (name.endsWith('-I')) {
+                            name = name.slice(0, -2) + '-V';
+                        } else if (name.endsWith('-II')) {
+                            name = name.slice(0, -3) + '-VI';
+                        } else if (name.endsWith('Paper I')) {
+                            name = name.replace('Paper I', 'Paper V');
+                        } else if (name.endsWith('Paper II')) {
+                            name = name.replace('Paper II', 'Paper VI');
+                        }
+                    } else if (name.includes('CORE-II (MINOR)')) {
+                        name = name.replace('Paper I', 'Paper II');
+                    } else if (name.includes('MDC-I')) {
+                        name = 'MDC-III (Multi-Disciplinary)';
+                        cr = 3;
+                    } else if (name.includes('AEC-I')) {
+                        name = 'VAC-II (Ethics & Values)';
+                        cr = 3;
+                    }
+                    return { ...s, name, cr };
                 });
                 // Add Major VII
                 const majorDeptName = dept.toUpperCase();
@@ -482,7 +567,7 @@ const CalculatorController = {
                         { name: 'DSE-2 (FSAR)', cr: 6, hasPr: false }
                     ];
                 } else {
-                    list = list.filter(s => !s.name.includes('SEC-2') && !s.name.includes('GE-B2'));
+                    list = list.filter(s => !s.name.includes('SEC-2') && !s.name.includes('GE-B2') && !s.name.includes('CORE-10'));
                     list = list.map(s => {
                         let name = s.name.replace('AECC-EV', 'AECC-EV (EV-5)').replace('CORE-8', 'CORE-11').replace('CORE-9', 'CORE-12');
                         return { ...s, name };
@@ -501,7 +586,7 @@ const CalculatorController = {
                         { name: 'DSE-4 (BRMP)', cr: 6, hasPr: false, isBRMP: true }
                     ];
                 } else {
-                    list = list.filter(s => !s.name.includes('SEC-2') && !s.name.includes('GE-B2'));
+                    list = list.filter(s => !s.name.includes('SEC-2') && !s.name.includes('GE-B2') && !s.name.includes('CORE-10'));
                     list = list.map(s => {
                         let name = s.name.replace('AECC-EV', 'AECC-EV (EV-6)').replace('CORE-8', 'CORE-13').replace('CORE-9', 'CORE-14');
                         return { ...s, name };
@@ -542,7 +627,7 @@ const CalculatorController = {
             // Maximum values dynamically updated based on hasPr and syllabusMode
             let maxMidTh = s.hasPr ? 10 : 20;
             let maxMidSt = s.hasPr ? 5 : 10;
-            let maxEndTh = s.hasPr ? 50 : 60;
+            let maxEndTh = 100; // Always raw 100 for NEP-2020
             let maxEndPr = s.hasPr ? 20 : 0;
 
             if (state.syllabusMode === 'cbcs') {
@@ -583,10 +668,11 @@ const CalculatorController = {
                         <select onchange="CalculatorController.updateGrade(${idx}, this.value)" class="input-table" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); font-weight: 700; border-radius: var(--radius-sm);">
                             <option value="" ${!s.grade ? 'selected' : ''}>-- Grade --</option>
                             <option value="O" ${s.grade === 'O' ? 'selected' : ''}>O (Outstanding)</option>
-                            <option value="E" ${s.grade === 'E' ? 'selected' : ''}>E (Excellent)</option>
+                            <option value="A+" ${s.grade === 'A+' ? 'selected' : ''}>A+ (Excellent)</option>
                             <option value="A" ${s.grade === 'A' ? 'selected' : ''}>A (Very Good)</option>
-                            <option value="B" ${s.grade === 'B' ? 'selected' : ''}>B (Good)</option>
-                            <option value="C" ${s.grade === 'C' ? 'selected' : ''}>C (Fair)</option>
+                            <option value="B+" ${s.grade === 'B+' ? 'selected' : ''}>B+ (Good)</option>
+                            <option value="B" ${s.grade === 'B' ? 'selected' : ''}>B (Above Average)</option>
+                            <option value="C" ${s.grade === 'C' ? 'selected' : ''}>C (Average)</option>
                             <option value="D" ${s.grade === 'D' ? 'selected' : ''}>D (Pass)</option>
                             <option value="F" ${s.grade === 'F' ? 'selected' : ''}>F (Fail)</option>
                         </select>
@@ -716,7 +802,7 @@ const CalculatorController = {
     recalculateRow(index) {
         const s = state.subjects[index];
         if (state.calcMode === 'grade') {
-            const gradePoints = { 'O': 10, 'E': 9, 'A': 8, 'B': 7, 'C': 6, 'D': 5, 'F': 0 };
+            const gradePoints = { 'O': 10, 'A+': 9, 'A': 8, 'B+': 7, 'B': 6, 'C': 5, 'D': 4, 'F': 0 };
             const grade = s.grade || 'F';
             const gp = gradePoints[grade] || 0;
             const cp = gp * s.cr;
@@ -740,58 +826,51 @@ const CalculatorController = {
             endTotal = s.endTh + (s.hasPr ? s.endPr : 0);
         } else {
             midTotal = s.midTh + (s.hasPr ? s.midPr : 0) + s.midAtt + s.midSt + (!s.hasPr ? s.midAssign : 0);
-            endTotal = s.endTh + (s.hasPr ? s.endPr : 0);
+            let scaledEndTh = s.endTh;
+            if (!isEVS) {
+                if (s.hasPr) {
+                    scaledEndTh = Math.round(s.endTh * 0.5);
+                } else {
+                    scaledEndTh = Math.round(s.endTh * 0.6);
+                }
+            }
+            endTotal = scaledEndTh + (s.hasPr ? s.endPr : 0);
         }
         finalTotal = midTotal + endTotal;
 
         document.getElementById(`total-${index}`).textContent = Math.round(finalTotal);
 
-        // pass benchmarks calculation
-        let endThMax = 60;
-        let endPrMax = 20;
-
-        if (state.syllabusMode === 'cbcs') {
-            if (isEthics || s.cr === 1) {
-                endThMax = 25;
-            } else {
-                endThMax = s.hasPr ? 60 : 80;
-            }
-            endPrMax = 25;
-        } else {
-            if (isEVS) {
-                endThMax = 100;
-            } else {
-                endThMax = s.hasPr ? 50 : 60;
-            }
-            endPrMax = 20;
-        }
-
-        if (s.isPRJ) {
-            endThMax = 100;
-        } else if (s.isBRMP) {
-            endThMax = 50;
-        }
-
-        const endThPercentage = (s.endTh / endThMax) * 100;
-
+        const aggregateMax = (state.syllabusMode === 'cbcs' && (isEthics || s.cr === 1)) ? 25 : 100;
         let hasFailedComponent = false;
 
-        // End Sem Theory threshold 40% (except Project and Ethics which are integrated or evaluated differently)
-        if (!isEthics && !isEVS && !s.isPRJ && !s.isBRMP && endThPercentage < 40) {
-            hasFailedComponent = true;
+        if (state.syllabusMode === 'cbcs') {
+            let endThMax = isEthics || s.cr === 1 ? 25 : (s.hasPr ? 60 : 80);
+            let endPrMax = 25;
+            const endThPercentage = (s.endTh / endThMax) * 100;
+            if (!isEthics && !s.isPRJ && !s.isBRMP && endThPercentage < 40) {
+                hasFailedComponent = true;
+            }
+            if (s.hasPr && (s.endPr / endPrMax) * 100 < 40) {
+                hasFailedComponent = true;
+            }
+            if ((finalTotal / aggregateMax) * 100 < 40) {
+                hasFailedComponent = true;
+            }
+        } else {
+            // NEP-2020 Scheme
+            // End Sem Theory threshold is 40% of raw marks (which is 40 out of 100)
+            if (s.endTh < 40 && !isEVS) {
+                hasFailedComponent = true;
+            }
+            // Practical threshold is 40% of raw marks (which is 8 out of 20)
+            if (s.hasPr && s.endPr < 8) {
+                hasFailedComponent = true;
+            }
+            // Aggregate threshold is 40% (40 out of 100)
+            if (finalTotal < 40) {
+                hasFailedComponent = true;
+            }
         }
-        
-        // Practical threshold 40% (if applicable)
-        if (s.hasPr && (s.endPr / endPrMax) * 100 < 40) {
-            hasFailedComponent = true;
-        }
-        
-        // Aggregate threshold 40%
-        const aggregateMax = (state.syllabusMode === 'cbcs' && (isEthics || s.cr === 1)) ? 25 : 100;
-        if ((finalTotal / aggregateMax) * 100 < 40) {
-            hasFailedComponent = true;
-        }
-
         let grade = 'F';
         let gp = 0;
 
@@ -874,13 +953,8 @@ const CalculatorController = {
                     endPrPassMin = 10;
                     endPrMax = 25;
                 } else {
-                    if (isEVS) {
-                        endThPassMin = 40;
-                        endThMax = 100;
-                    } else {
-                        endThPassMin = s.hasPr ? 20 : 24;
-                        endThMax = s.hasPr ? 50 : 60;
-                    }
+                    endThPassMin = 40;
+                    endThMax = 100;
                     endPrPassMin = 8;
                     endPrMax = 20;
                 }
@@ -942,10 +1016,24 @@ const CalculatorController = {
             statusBadge.className = 'status-indicator pass';
             statusText.textContent = 'PASS';
         }
+        const totalMarksSecured = document.getElementById('total-marks-secured');
+        const overallPercentage = document.getElementById('overall-percentage');
 
-        document.getElementById('total-marks-secured').textContent = `${Math.round(totalSecured)} / ${totalMax}`;
-        const percentage = totalMax > 0 ? (totalSecured / totalMax) * 100 : 0;
-        document.getElementById('overall-percentage').textContent = `${percentage.toFixed(1)}%`;
+        const metricMarks = totalMarksSecured ? totalMarksSecured.closest('.metric') : null;
+        const metricPercent = overallPercentage ? overallPercentage.closest('.metric') : null;
+
+        if (state.calcMode === 'grade') {
+            if (metricMarks) metricMarks.style.display = 'none';
+            if (metricPercent) metricPercent.style.display = 'none';
+        } else {
+            if (metricMarks) metricMarks.style.display = 'flex';
+            if (metricPercent) metricPercent.style.display = 'flex';
+            if (totalMarksSecured) totalMarksSecured.textContent = `${Math.round(totalSecured)} / ${totalMax}`;
+            if (overallPercentage) {
+                const percentage = totalMax > 0 ? (totalSecured / totalMax) * 100 : 0;
+                overallPercentage.textContent = `${Math.round(percentage).toFixed(2)}%`;
+            }
+        }
 
         this.renderWarnings(warnings);
     },
@@ -1195,9 +1283,18 @@ const CalculatorController = {
                 endThMax = 100;
             } else if (s.isBRMP) {
                 endThMax = 50;
+            }            let endThDisplay = '';
+            if (state.syllabusMode === 'cbcs') {
+                endThDisplay = `${s.endTh} / ${endThMax}`;
+            } else {
+                if (isEVS) {
+                    endThDisplay = `${s.endTh} / 100`;
+                } else {
+                    const scaled = Math.round(s.endTh * (s.hasPr ? 0.5 : 0.6));
+                    endThDisplay = `${s.endTh} / 100 (Scaled: ${scaled} / ${s.hasPr ? 50 : 60})`;
+                }
             }
 
-            const endThVal = s.endTh;
             const endPrVal = s.hasPr ? s.endPr : '-';
 
             const ms = parseFloat(document.getElementById(`total-${idx}`).textContent) || 0;
@@ -1217,7 +1314,7 @@ const CalculatorController = {
             tr.innerHTML = `
                 <td style="text-align: left; font-weight: 600;">${s.name}</td>
                 <td>${midMax === 0 ? '-' : Math.round(midTotal) + ' / ' + midMax}</td>
-                <td>${endThVal} / ${endThMax}</td>
+                <td>${endThDisplay}</td>
                 <td>${s.hasPr ? endPrVal + ' / ' + endPrMax : '-'}</td>
                 <td>${Math.round(ms)} / ${paperMax}</td>
                 <td>${gr}</td>
@@ -1229,13 +1326,32 @@ const CalculatorController = {
         });
 
         const sgpa = totalCR > 0 ? (totalCP / totalCR) : 0;
-        document.getElementById('print-total-marks').textContent = `${Math.round(totalMS)} / ${totalFM}`;
-        document.getElementById('print-total-cr').textContent = totalCR;
-        document.getElementById('print-total-cp').textContent = totalCP.toFixed(2);
-        document.getElementById('print-sgpa').textContent = sgpa.toFixed(2);
+        
+        const printTotalMarks = document.getElementById('print-total-marks');
+        const printTotalCR = document.getElementById('print-total-cr');
+        const printTotalCP = document.getElementById('print-total-cp');
+        const printSGPA = document.getElementById('print-sgpa');
+        const printPercent = document.getElementById('print-overall-percentage');
 
-        const percentage = totalFM > 0 ? (totalMS / totalFM) * 100 : 0;
-        document.getElementById('print-overall-percentage').textContent = `${percentage.toFixed(1)}%`;
+        const printMarksRow = printTotalMarks ? (printTotalMarks.closest('tr') || printTotalMarks.parentElement) : null;
+        const printPercentRow = printPercent ? (printPercent.closest('tr') || printPercent.parentElement) : null;
+
+        if (state.calcMode === 'grade') {
+            if (printMarksRow) printMarksRow.style.display = 'none';
+            if (printPercentRow) printPercentRow.style.display = 'none';
+        } else {
+            if (printMarksRow) printMarksRow.style.display = '';
+            if (printPercentRow) printPercentRow.style.display = '';
+            if (printTotalMarks) printTotalMarks.textContent = `${Math.round(totalMS)} / ${totalFM}`;
+            if (printPercent) {
+                const percentage = totalFM > 0 ? (totalMS / totalFM) * 100 : 0;
+                printPercent.textContent = `${Math.round(percentage).toFixed(2)}%`;
+            }
+        }
+
+        if (printTotalCR) printTotalCR.textContent = totalCR;
+        if (printTotalCP) printTotalCP.textContent = totalCP.toFixed(2);
+        if (printSGPA) printSGPA.textContent = sgpa.toFixed(2);
 
         const statusText = document.getElementById('print-result-status');
         const printStatusBox = document.getElementById('print-status-box');
